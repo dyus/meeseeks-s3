@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "s3-compliance"
+version = "0.1.0"
+description = "S3 API compliance testing framework"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "boto3>=1.28.0",
+    "botocore>=1.31.0",
+    "requests>=2.31.0",
+    "pytest>=8.0.0",
+    "pytest-html>=4.0.0",
+    "pytest-json-report>=1.5.0",
+    "pytest-xdist>=3.3.0",
+    "deepdiff>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "s3_handler(name): S3 API handler being tested",
+    "edge_case: Edge case or boundary condition test",
+    "comparison: Test that compares AWS vs custom S3",
+    "slow: Slow running test",
+    "aws_only: Test that only runs against real AWS",
+    "put_object: PutObject handler tests",
+    "put_object_acl: PutObjectACL handler tests",
+    "delete_objects: DeleteObjects handler tests",
+    "upload_part: UploadPart handler tests",
+    "post_object: PostObject handler tests",
+    "put_bucket_acl: PutBucketACL handler tests",
+]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
