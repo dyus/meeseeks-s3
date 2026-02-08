@@ -62,6 +62,12 @@ def pytest_addoption(parser):
         default="reports",
         help="Output directory for markdown reports (default: reports)",
     )
+    parser.addoption(
+        "--show-http",
+        action="store_true",
+        default=False,
+        help="Show HTTP request/response details for each test",
+    )
 
 
 def pytest_configure(config):
@@ -78,6 +84,12 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow running")
     config.addinivalue_line(
         "markers", "aws_only: mark test as only running against real AWS"
+    )
+    config.addinivalue_line(
+        "markers", "sse_c: mark test as SSE-C (Server-Side Encryption with Customer-Provided Keys)"
+    )
+    config.addinivalue_line(
+        "markers", "put_object: mark test as PutObject API test"
     )
 
 

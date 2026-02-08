@@ -218,14 +218,28 @@ reverse_s3/
 
 ## Environment Variables
 
+### AWS S3 Configuration
+
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `AWS_PROFILE` | `aws` | AWS profile for credentials |
-| `AWS_REGION` | `us-east-1` | AWS region |
-| `TEST_BUCKET_NAME` | `anon-reverse-s3-test-bucket` | Test bucket |
-| `S3_ENDPOINT` | — | Custom S3 endpoint URL (required for custom/comparison mode) |
-| `CUSTOM_S3_PROFILE` | `AWS_PROFILE` | Profile for custom endpoint |
-| `CUSTOM_S3_REGION` | `eu-west-1` | Custom endpoint region |
+| `AWS_PROFILE` | `aws` | AWS CLI profile name for credentials |
+| `AWS_REGION` | `us-east-1` | AWS region for S3 requests |
+| `AWS_S3_ENDPOINT` | `https://s3.us-east-1.amazonaws.com` | AWS S3 endpoint URL |
+
+### Custom S3 Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `S3_ENDPOINT` | — | Custom S3 endpoint URL (**required** for custom/comparison mode) |
+| `CUSTOM_S3_PROFILE` | `$AWS_PROFILE` | AWS CLI profile for custom endpoint credentials |
+| `CUSTOM_S3_REGION` | `eu-west-1` | Region for custom endpoint signing |
+| `S3_VERIFY_SSL` | `true` | Verify SSL certificates (`true`/`false`) |
+
+### Test Configuration
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TEST_BUCKET_NAME` | `s3-compliance-test-bucket` | Bucket name for running tests |
 
 ### Configuring AWS Credentials
 

@@ -348,13 +348,17 @@ def aws_endpoint_url():
 
 
 @pytest.fixture(scope="session")
-def custom_endpoint_url():
-    """Custom S3 endpoint URL."""
+def custom_endpoint_url(request):
+    """Custom S3 endpoint URL.
+
+    Returns None in single-endpoint AWS mode, skips in comparison/custom mode.
+    """
     url = os.getenv("S3_ENDPOINT")
-    if not url:
+    endpoint_mode = request.config.getoption("--endpoint", default="aws")
+
+    if endpoint_mode in ("custom", "both") and not url:
         pytest.skip("S3_ENDPOINT environment variable is required for custom endpoint tests")
-    if not url:
-        pytest.skip("S3_ENDPOINT not set for comparison tests")
+
     return url
 
 
@@ -653,6 +657,42 @@ def make_request(
             url = f"{endpoint_url}{path}{query_params}"
             capture = _capture_http(method, url, req_headers, body, response, endpoint_mode)
             request.node.stash[http_captures_key].append({"single": capture})
+
+            # Show HTTP details if requested
+            show_http = request.config.getoption("--show-http")
+            if show_http:
+                print("\n" + "=" * 70)
+                print(f"HTTP: {method} {path}{query_params}")
+                print("=" * 70)
+                print(f"\n--- REQUEST ---")
+                print(f"URL: {url}")
+                print(f"Headers:")
+                # Show signed headers from capture
+                for key, value in capture.request_headers.items():
+                    print(f"  {key}: {value}")
+                if body:
+                    body_str = body.decode("utf-8", errors="replace")
+                    print(f"\nBody ({len(body)} bytes):")
+                    if len(body_str) > 1000:
+                        print(body_str[:1000] + "... (truncated)")
+                    else:
+                        print(body_str)
+                else:
+                    print("\nBody: (empty)")
+                print(f"\n--- RESPONSE ---")
+                print(f"Status: {response.status_code}")
+                print(f"Headers:")
+                for key, value in response.headers.items():
+                    print(f"  {key}: {value}")
+                if response.text:
+                    print(f"\nBody ({len(response.text)} chars):")
+                    if len(response.text) > 2000:
+                        print(response.text[:2000] + "... (truncated)")
+                    else:
+                        print(response.text)
+                else:
+                    print("\nBody: (empty)")
+                print("=" * 70 + "\n")
 
             return response
 
