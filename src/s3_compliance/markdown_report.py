@@ -176,6 +176,21 @@ def _render_comparison(result: TestHTTPData) -> list[str]:
             "",
         ])
 
+    # Show Custom request/response
+    if result.custom_capture:
+        lines.extend([
+            "#### Custom",
+            "",
+            "**Request:**",
+            "",
+            result.custom_capture.request_to_markdown(),
+            "",
+            "**Response:**",
+            "",
+            result.custom_capture.response_to_markdown(),
+            "",
+        ])
+
     # Comparison table
     lines.extend([
         "#### Comparison",
@@ -209,17 +224,6 @@ def _render_comparison(result: TestHTTPData) -> list[str]:
             ])
 
     lines.append("")
-
-    # Also show custom response if different
-    if not comp.get("is_compliant") and result.custom_capture:
-        lines.extend([
-            "#### Custom",
-            "",
-            "**Response:**",
-            "",
-            result.custom_capture.response_to_markdown(),
-            "",
-        ])
 
     return lines
 
@@ -272,7 +276,7 @@ def generate_grouped_reports(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    prefix = prefix or datetime.now().strftime("%Y-%m-%d")
+    prefix = prefix or datetime.now().strftime("%Y-%m-%d_%H%M%S")
     generated = []
 
     # Group by handler

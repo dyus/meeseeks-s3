@@ -310,7 +310,7 @@ def pytest_sessionfinish(session, exitstatus):
     prefix = session.config.getoption("--md-report-prefix")
 
     if prefix is None:
-        prefix = datetime.now().strftime("%Y-%m-%d")
+        prefix = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
     generated = generate_grouped_reports(_test_results, output_dir, prefix)
 

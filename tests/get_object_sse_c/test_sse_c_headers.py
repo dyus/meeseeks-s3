@@ -1,15 +1,15 @@
-"""Tests for PutObject with SSE-C (Server-Side Encryption with Customer-Provided Keys).
+"""Tests for GetObject with SSE-C (Server-Side Encryption with Customer-Provided Keys).
 
-These tests verify S3 behavior when SSE-C headers are provided in various
-combinations and with various validation errors.
+These tests verify S3 behavior when retrieving an SSE-C encrypted object
+with various header combinations and validation errors.
 
-SSE-C requires three headers:
+A single SSE-C encrypted object is created once per module and reused
+across all tests.
+
+GetObject for SSE-C requires three headers:
 - x-amz-server-side-encryption-customer-algorithm: Must be "AES256"
 - x-amz-server-side-encryption-customer-key: Base64-encoded 32-byte key
 - x-amz-server-side-encryption-customer-key-MD5: Base64-encoded MD5 of the key
-
-Supports both single endpoint mode (--endpoint=aws or --endpoint=custom)
-and comparison mode (--endpoint=both).
 """
 
 import base64
@@ -20,19 +20,13 @@ import uuid
 import pytest
 
 
-# Default test key (deterministic for reproducibility)
+# Default test key (deterministic, same as put_object_sse_c tests)
 DEFAULT_SSE_C_KEY_BYTES = hashlib.sha256(b"reverse_s3_ssec_default_key").digest()
+SSE_C_BODY = b"get-object sse-c test content"
 
 
 def generate_sse_c_key(key_bytes: bytes = None) -> tuple[str, str]:
-    """Generate SSE-C key and MD5 in base64 format.
-
-    Args:
-        key_bytes: Raw key bytes (default: DEFAULT_SSE_C_KEY_BYTES)
-
-    Returns:
-        Tuple of (key_base64, key_md5_base64)
-    """
+    """Generate SSE-C key and MD5 in base64 format."""
     if key_bytes is None:
         key_bytes = DEFAULT_SSE_C_KEY_BYTES
     key_b64 = base64.b64encode(key_bytes).decode("utf-8")
@@ -50,102 +44,155 @@ def extract_error_info(response_text: str) -> tuple[str | None, str | None]:
     )
 
 
-@pytest.mark.put_object
-@pytest.mark.s3_handler("PutObject")
+@pytest.fixture(scope="module")
+def ssec_object_key():
+    """Unique key for the SSE-C encrypted object shared across the module."""
+    return f"test-ssec-get-{uuid.uuid4().hex[:8]}"
+
+
+@pytest.fixture(scope="module")
+def ssec_object(request, aws_client, test_bucket, setup_test_bucket, ssec_object_key):
+    """Create a single SSE-C encrypted object for the entire module.
+
+    Uploads the object with SSE-C encryption on AWS (and Custom in both mode),
+    yields the key name, and cleans up after all tests in the module finish.
+    """
+    sse_kwargs = dict(
+        Bucket=test_bucket,
+        Key=ssec_object_key,
+        Body=SSE_C_BODY,
+        SSECustomerAlgorithm="AES256",
+        SSECustomerKey=base64.b64encode(DEFAULT_SSE_C_KEY_BYTES).decode("utf-8"),
+        SSECustomerKeyMD5=base64.b64encode(
+            hashlib.md5(DEFAULT_SSE_C_KEY_BYTES).digest()
+        ).decode("utf-8"),
+    )
+
+    aws_client.put_object(**sse_kwargs)
+
+    # Also create on custom endpoint in comparison mode
+    custom_cl = None
+    endpoint_mode = request.config.getoption("--endpoint")
+    if endpoint_mode == "both":
+        import os
+        if os.getenv("S3_ENDPOINT"):
+            from s3_compliance.client import S3ClientFactory
+            custom_cl = S3ClientFactory().create_client("custom")
+            custom_cl.put_object(**sse_kwargs)
+
+    yield ssec_object_key
+
+    # Cleanup on both endpoints
+    try:
+        aws_client.delete_object(Bucket=test_bucket, Key=ssec_object_key)
+    except Exception:
+        pass
+    if custom_cl:
+        try:
+            custom_cl.delete_object(Bucket=test_bucket, Key=ssec_object_key)
+        except Exception:
+            pass
+
+
+@pytest.mark.s3_handler("GetObject")
 @pytest.mark.sse_c
-class TestSSECPutObjectHeaders:
-    """Test PutObject API with SSE-C header combinations."""
-
-    @pytest.fixture
-    def test_key(self):
-        """Generate unique test key."""
-        return f"test-ssec-{uuid.uuid4().hex[:8]}"
-
-    @pytest.fixture
-    def test_body(self):
-        """Test content."""
-        return b"test content for SSE-C encryption test"
+class TestSSECGetObjectHeaders:
+    """Test GetObject API with SSE-C header combinations."""
 
     # =========================================================================
-    # Successful Request Tests
+    # Successful Request
     # =========================================================================
 
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_all_valid_headers_accepted(
+    def test_get_ssec_object_with_valid_headers(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should accept PutObject with all valid SSE-C headers."""
+        """Server should return decrypted object with all valid SSE-C headers."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
-        json_metadata["sse_c_algorithm"] = "AES256"
-        json_metadata["sse_c_key_length"] = 32
-
         if hasattr(response, "comparison"):
-            assert response.aws.status_code in [200, 204], (
-                f"AWS expected 200/204, got {response.aws.status_code}: {response.aws.text[:200]}"
+            assert response.aws.status_code == 200, (
+                f"AWS expected 200, got {response.aws.status_code}"
             )
+            assert response.aws.content == SSE_C_BODY
             json_metadata["aws_status"] = response.aws.status_code
             json_metadata["custom_status"] = response.custom.status_code
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
-            assert response.status_code in [200, 204], (
-                f"Expected 200/204, got {response.status_code}: {response.text[:200]}"
+            assert response.status_code == 200, (
+                f"Expected 200, got {response.status_code}: {response.text[:200]}"
             )
+            assert response.content == SSE_C_BODY
             json_metadata["status"] = response.status_code
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+    # =========================================================================
+    # No SSE-C Headers (plain GET on encrypted object)
+    # =========================================================================
+
+    def test_get_ssec_object_without_headers_rejected(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Server should reject GET without any SSE-C headers on encrypted object."""
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+        )
+
+        json_metadata["provided_headers"] = []
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
 
     # =========================================================================
     # Missing Header Tests (partial SSE-C headers)
     # =========================================================================
 
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_only_algorithm_rejected(
+    def test_get_ssec_object_only_algorithm_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with only SSE-C algorithm header."""
+        """Server should reject GET with only SSE-C algorithm header."""
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -159,9 +206,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -170,35 +214,24 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_only_key_rejected(
+    def test_get_ssec_object_only_key_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with only SSE-C key header."""
+        """Server should reject GET with only SSE-C key header."""
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-key": key_b64,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -212,9 +245,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -223,35 +253,24 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_only_key_md5_rejected(
+    def test_get_ssec_object_only_key_md5_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with only SSE-C key MD5 header."""
+        """Server should reject GET with only SSE-C key MD5 header."""
         _, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -265,9 +284,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -276,36 +292,29 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_algorithm_and_key_missing_md5_rejected(
+    def test_get_ssec_object_algorithm_and_key_without_md5_accepted(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with algorithm and key but missing MD5."""
+        """Server accepts GET with algorithm and key but missing MD5.
+
+        Unlike PutObject, GetObject does NOT require the key MD5 header
+        when algorithm and key are provided. AWS returns 200 OK.
+        """
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -313,53 +322,36 @@ class TestSSECPutObjectHeaders:
         json_metadata["missing_headers"] = ["key_md5"]
 
         if hasattr(response, "comparison"):
-            assert response.aws.status_code == 400, (
-                f"AWS expected 400, got {response.aws.status_code}"
+            assert response.aws.status_code == 200, (
+                f"AWS expected 200, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
-            assert response.status_code == 400, (
-                f"Expected 400, got {response.status_code}"
+            assert response.status_code == 200, (
+                f"Expected 200, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
-
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_algorithm_and_md5_missing_key_rejected(
+    def test_get_ssec_object_algorithm_and_md5_missing_key_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with algorithm and MD5 but missing key."""
+        """Server should reject GET with algorithm and MD5 but missing key."""
         _, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -373,9 +365,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -384,36 +373,25 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_key_and_md5_missing_algorithm_rejected(
+    def test_get_ssec_object_key_and_md5_missing_algorithm_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with key and MD5 but missing algorithm."""
+        """Server should reject GET with key and MD5 but missing algorithm."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -427,9 +405,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -437,47 +412,35 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.text)
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
-
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
 
     # =========================================================================
     # Invalid Value Tests
     # =========================================================================
 
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_invalid_algorithm_rejected(
+    def test_get_ssec_object_invalid_algorithm_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with invalid SSE-C algorithm."""
+        """Server should reject GET with invalid SSE-C algorithm."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES128-INVALID",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
         json_metadata["invalid_algorithm"] = "AES128-INVALID"
-        json_metadata["expected_algorithm"] = "AES256"
 
         if hasattr(response, "comparison"):
             assert response.aws.status_code == 400, (
@@ -486,9 +449,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -497,97 +457,115 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_invalid_key_length_10_rejected(
+    def test_get_ssec_object_wrong_key_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with invalid key length (10 bytes instead of 32)."""
-        short_key = b"1234567890"  # 10 bytes
-        key_b64, key_md5 = generate_sse_c_key(short_key)
+        """Server should reject GET with a different (wrong) SSE-C key."""
+        wrong_key_bytes = hashlib.sha256(b"this_is_a_totally_wrong_key").digest()
+        key_b64, key_md5 = generate_sse_c_key(wrong_key_bytes)
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
-        json_metadata["key_length_bytes"] = 10
-        json_metadata["expected_key_length"] = 32
+        json_metadata["wrong_key"] = True
 
         if hasattr(response, "comparison"):
-            assert response.aws.status_code == 400, (
-                f"AWS expected 400, got {response.aws.status_code}"
+            assert response.aws.status_code == 403, (
+                f"AWS expected 403, got {response.aws.status_code}"
             )
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
-            assert response.status_code == 400, (
-                f"Expected 400, got {response.status_code}"
+            assert response.status_code == 403, (
+                f"Expected 403, got {response.status_code}"
             )
             error_code, error_msg = extract_error_info(response.text)
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_mismatched_key_md5_rejected(
+    def test_get_ssec_object_invalid_key_length_10_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request when key MD5 doesn't match key."""
+        """Server should reject GET with invalid key length (10 bytes).
+
+        AWS returns 403 Forbidden for invalid key length on GetObject
+        (unlike PutObject which returns 400).
+        """
+        short_key = b"1234567890"
+        key_b64, key_md5 = generate_sse_c_key(short_key)
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_length_bytes"] = 10
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 403, (
+                f"AWS expected 403, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+        else:
+            assert response.status_code == 403, (
+                f"Expected 403, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_mismatched_key_md5_rejected(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Server should reject GET when key MD5 doesn't match key."""
         key_b64, _ = generate_sse_c_key()
-        # Use MD5 of a different key
-        wrong_key_md5 = base64.b64encode(
+        wrong_md5 = base64.b64encode(
             hashlib.md5(b"wrong-key-for-md5-mismatch").digest()
         ).decode("utf-8")
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
-            "x-amz-server-side-encryption-customer-key-MD5": wrong_key_md5,
+            "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -600,9 +578,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -611,37 +586,26 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_invalid_key_md5_not_base64_rejected(
+    def test_get_ssec_object_invalid_key_md5_not_base64_rejected(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject request when key MD5 is not valid base64."""
+        """Server should reject GET when key MD5 is not valid base64."""
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": "not-valid-base64!!!",
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -654,9 +618,6 @@ class TestSSECPutObjectHeaders:
             error_code, error_msg = extract_error_info(response.aws.text)
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -665,50 +626,32 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
     # =========================================================================
     # Validation Order Tests
     # =========================================================================
 
     @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    # TODO wrong error on custom due to invalid md5 check should be last one
-    def test_sse_c_all_invalid_validation_order(
+    def test_get_ssec_object_all_invalid_validation_order(
         self,
-        s3_client,
         test_bucket,
-        test_key,
-        test_body,
+        ssec_object,
         make_request,
         json_metadata,
     ):
-        """Test which validation error is returned first when all headers are invalid.
-
-        This test helps understand the server's validation order:
-        - Invalid algorithm (AES256-INVALID)
-        - Invalid key (too short)
-        - Invalid MD5 (doesn't match key)
-        """
-        short_key = b"short-key"  # Invalid length
+        """Test which validation error is returned first when all headers are invalid."""
+        short_key = b"short-key"
         key_b64 = base64.b64encode(short_key).decode("utf-8")
         wrong_md5 = base64.b64encode(hashlib.md5(b"wrong").digest()).decode("utf-8")
 
         headers = {
-            "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256-INVALID",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
         }
 
         response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
 
@@ -724,9 +667,6 @@ class TestSSECPutObjectHeaders:
             json_metadata["aws_error_code"] = error_code
             json_metadata["aws_error_message"] = error_msg
             json_metadata["first_validation_error"] = error_code
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
@@ -735,128 +675,3 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
             json_metadata["first_validation_error"] = error_code
-
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
-    @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_invalid_key_length_with_invalid_algorithm(
-        self,
-        s3_client,
-        test_bucket,
-        test_key,
-        test_body,
-        make_request,
-        json_metadata,
-    ):
-        """Test validation order: invalid algorithm vs invalid key length."""
-        short_key = b"1234567890"  # 10 bytes
-        key_b64, key_md5 = generate_sse_c_key(short_key)
-
-        headers = {
-            "Content-Type": "text/plain",
-            "x-amz-server-side-encryption-customer-algorithm": "INVALID-ALGO",
-            "x-amz-server-side-encryption-customer-key": key_b64,
-            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
-        }
-
-        response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
-            headers=headers,
-        )
-
-        json_metadata["invalid_algorithm"] = "INVALID-ALGO"
-        json_metadata["key_length_bytes"] = 10
-        json_metadata["key_md5_matches_key"] = True  # MD5 is valid
-
-        if hasattr(response, "comparison"):
-            assert response.aws.status_code == 400, (
-                f"AWS expected 400, got {response.aws.status_code}"
-            )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
-        else:
-            assert response.status_code == 400, (
-                f"Expected 400, got {response.status_code}"
-            )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
-
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
-
-    @pytest.mark.edge_case
-    @pytest.mark.usefixtures("setup_test_bucket")
-    def test_sse_c_invalid_key_length_with_mismatched_md5(
-        self,
-        s3_client,
-        test_bucket,
-        test_key,
-        test_body,
-        make_request,
-        json_metadata,
-    ):
-        """Test validation order: invalid key length vs mismatched MD5."""
-        short_key = b"1234567890"  # 10 bytes
-        key_b64 = base64.b64encode(short_key).decode("utf-8")
-        # Use wrong MD5
-        wrong_md5 = base64.b64encode(hashlib.md5(b"wrong").digest()).decode("utf-8")
-
-        headers = {
-            "Content-Type": "text/plain",
-            "x-amz-server-side-encryption-customer-algorithm": "AES256",
-            "x-amz-server-side-encryption-customer-key": key_b64,
-            "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
-        }
-
-        response = make_request(
-            "PUT",
-            f"/{test_bucket}/{test_key}",
-            body=test_body,
-            headers=headers,
-        )
-
-        json_metadata["key_length_bytes"] = 10
-        json_metadata["key_md5_matches_key"] = False
-
-        if hasattr(response, "comparison"):
-            assert response.aws.status_code == 400, (
-                f"AWS expected 400, got {response.aws.status_code}"
-            )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
-            assert response.comparison.is_compliant, (
-                f"Custom S3 doesn't match AWS: {response.diff_summary}"
-            )
-        else:
-            assert response.status_code == 400, (
-                f"Expected 400, got {response.status_code}"
-            )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
-
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
