@@ -45,6 +45,7 @@ markers = [
     "upload_part: UploadPart handler tests",
     "post_object: PostObject handler tests",
     "put_bucket_acl: PutBucketACL handler tests",
+    "put_bucket_versioning: PutBucketVersioning handler tests",
 ]
 addopts = [
     "-v",

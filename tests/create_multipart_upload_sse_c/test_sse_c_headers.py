@@ -1,15 +1,15 @@
-"""Tests for PutObject with SSE-C (Server-Side Encryption with Customer-Provided Keys).
+"""Tests for CreateMultipartUpload with SSE-C (Server-Side Encryption with Customer-Provided Keys).
 
-These tests verify S3 behavior when SSE-C headers are provided in various
-combinations and with various validation errors.
+These tests verify S3 behavior when initiating a multipart upload with SSE-C headers
+in various combinations and with various validation errors.
 
-SSE-C requires three headers:
+CreateMultipartUpload (POST /{bucket}/{key}?uploads) for SSE-C requires three headers:
 - x-amz-server-side-encryption-customer-algorithm: Must be "AES256"
 - x-amz-server-side-encryption-customer-key: Base64-encoded 32-byte key
 - x-amz-server-side-encryption-customer-key-MD5: Base64-encoded MD5 of the key
 
-Supports both single endpoint mode (--endpoint=aws or --endpoint=custom)
-and comparison mode (--endpoint=both).
+On success, returns 200 with XML body containing UploadId.
+This is a write-path operation, so SSE-C validation behavior should match PutObject.
 """
 
 import base64
@@ -18,28 +18,48 @@ import uuid
 
 import pytest
 
-from s3_compliance.sse_c import DEFAULT_SSE_C_KEY_BYTES, generate_sse_c_key
-from s3_compliance.xml_utils import extract_error_info
+from s3_compliance.sse_c import generate_sse_c_key
+from s3_compliance.xml_utils import extract_error_info, extract_upload_id
 
 
-@pytest.mark.put_object
-@pytest.mark.s3_handler("PutObject")
+@pytest.mark.s3_handler("CreateMultipartUpload")
 @pytest.mark.sse_c
-class TestSSECPutObjectHeaders:
-    """Test PutObject API with SSE-C header combinations."""
+class TestSSECCreateMultipartUploadHeaders:
+    """Test CreateMultipartUpload API with SSE-C header combinations."""
 
     @pytest.fixture
     def test_key(self):
         """Generate unique test key."""
-        return f"test-ssec-{uuid.uuid4().hex[:8]}"
+        return f"test-ssec-mpu-{uuid.uuid4().hex[:8]}"
 
-    @pytest.fixture
-    def test_body(self):
-        """Test content."""
-        return b"test content for SSE-C encryption test"
+    def _abort_upload(self, s3_client, bucket, key, response):
+        """Abort multipart upload if it was successfully created."""
+        if hasattr(response, "comparison"):
+            # Both mode — abort on both endpoints
+            for resp, client_key in [(response.aws, "aws"), (response.custom, "custom")]:
+                if resp.status_code == 200:
+                    upload_id = extract_upload_id(resp.text)
+                    if upload_id:
+                        try:
+                            client = s3_client[client_key] if isinstance(s3_client, dict) else s3_client
+                            client.abort_multipart_upload(
+                                Bucket=bucket, Key=key, UploadId=upload_id,
+                            )
+                        except Exception:
+                            pass
+        else:
+            if response.status_code == 200:
+                upload_id = extract_upload_id(response.text)
+                if upload_id:
+                    try:
+                        s3_client.abort_multipart_upload(
+                            Bucket=bucket, Key=key, UploadId=upload_id,
+                        )
+                    except Exception:
+                        pass
 
     # =========================================================================
-    # Successful Request Tests
+    # Successful Request
     # =========================================================================
 
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -48,50 +68,49 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
-        """Server should accept PutObject with all valid SSE-C headers."""
+        """Server should accept CreateMultipartUpload with all valid SSE-C headers."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["sse_c_algorithm"] = "AES256"
         json_metadata["sse_c_key_length"] = 32
 
         if hasattr(response, "comparison"):
-            assert response.aws.status_code in [200, 204], (
-                f"AWS expected 200/204, got {response.aws.status_code}: {response.aws.text[:200]}"
+            assert response.aws.status_code == 200, (
+                f"AWS expected 200, got {response.aws.status_code}: {response.aws.text[:200]}"
             )
+            upload_id = extract_upload_id(response.aws.text)
+            assert upload_id, "AWS response missing UploadId"
             json_metadata["aws_status"] = response.aws.status_code
             json_metadata["custom_status"] = response.custom.status_code
             assert response.comparison.is_compliant, (
                 f"Custom S3 doesn't match AWS: {response.diff_summary}"
             )
         else:
-            assert response.status_code in [200, 204], (
-                f"Expected 200/204, got {response.status_code}: {response.text[:200]}"
+            assert response.status_code == 200, (
+                f"Expected 200, got {response.status_code}: {response.text[:200]}"
             )
+            upload_id = extract_upload_id(response.text)
+            assert upload_id, "Response missing UploadId"
             json_metadata["status"] = response.status_code
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     # =========================================================================
     # Missing Header Tests (partial SSE-C headers)
@@ -104,21 +123,20 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
         """Server should reject request with only SSE-C algorithm header."""
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["algorithm"]
@@ -142,11 +160,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -155,7 +169,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -163,15 +176,15 @@ class TestSSECPutObjectHeaders:
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-key": key_b64,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["key"]
@@ -195,11 +208,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -208,7 +217,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -216,15 +224,15 @@ class TestSSECPutObjectHeaders:
         _, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["key_md5"]
@@ -248,11 +256,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -261,24 +265,27 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with algorithm and key but missing MD5."""
+        """Server should reject request with algorithm and key but missing MD5.
+
+        CreateMultipartUpload is a write-path operation like PutObject,
+        so it should require all three SSE-C headers.
+        """
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["algorithm", "key"]
@@ -302,11 +309,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -315,7 +318,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -323,16 +325,16 @@ class TestSSECPutObjectHeaders:
         _, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["algorithm", "key_md5"]
@@ -356,11 +358,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -369,7 +367,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -377,16 +374,16 @@ class TestSSECPutObjectHeaders:
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["provided_headers"] = ["key", "key_md5"]
@@ -410,11 +407,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     # =========================================================================
     # Invalid Value Tests
@@ -427,7 +420,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -435,21 +427,20 @@ class TestSSECPutObjectHeaders:
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES128-INVALID",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["invalid_algorithm"] = "AES128-INVALID"
-        json_metadata["expected_algorithm"] = "AES256"
 
         if hasattr(response, "comparison"):
             assert response.aws.status_code == 400, (
@@ -469,11 +460,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -482,26 +469,29 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
-        """Server should reject request with invalid key length (10 bytes instead of 32)."""
+        """Server should reject request with invalid key length (10 bytes instead of 32).
+
+        CreateMultipartUpload is a write-path operation like PutObject,
+        so AWS returns 400 InvalidArgument for invalid key length.
+        """
         short_key = b"1234567890"  # 10 bytes
         key_b64, key_md5 = generate_sse_c_key(short_key)
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["key_length_bytes"] = 10
@@ -525,11 +515,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -538,29 +524,27 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
         """Server should reject request when key MD5 doesn't match key."""
         key_b64, _ = generate_sse_c_key()
-        # Use MD5 of a different key
         wrong_key_md5 = base64.b64encode(
             hashlib.md5(b"wrong-key-for-md5-mismatch").digest()
         ).decode("utf-8")
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": wrong_key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["key_md5_matches_key"] = False
@@ -583,11 +567,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -596,7 +576,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -604,17 +583,17 @@ class TestSSECPutObjectHeaders:
         key_b64, _ = generate_sse_c_key()
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": "not-valid-base64!!!",
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["invalid_base64_md5"] = "not-valid-base64!!!"
@@ -637,11 +616,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     # =========================================================================
     # Validation Order Tests
@@ -649,39 +624,35 @@ class TestSSECPutObjectHeaders:
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
-    # TODO wrong error on custom due to invalid md5 check should be last one
     def test_sse_c_all_invalid_validation_order(
         self,
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
         """Test which validation error is returned first when all headers are invalid.
 
-        This test helps understand the server's validation order:
-        - Invalid algorithm (AES256-INVALID)
-        - Invalid key (too short)
-        - Invalid MD5 (doesn't match key)
+        Invalid algorithm (AES256-INVALID), invalid key (too short),
+        invalid MD5 (doesn't match key).
         """
-        short_key = b"short-key"  # Invalid length
+        short_key = b"short-key"
         key_b64 = base64.b64encode(short_key).decode("utf-8")
         wrong_md5 = base64.b64encode(hashlib.md5(b"wrong").digest()).decode("utf-8")
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256-INVALID",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["invalid_algorithm"] = "AES256-INVALID"
@@ -708,11 +679,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_message"] = error_msg
             json_metadata["first_validation_error"] = error_code
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -721,7 +688,6 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
@@ -730,22 +696,22 @@ class TestSSECPutObjectHeaders:
         key_b64, key_md5 = generate_sse_c_key(short_key)
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "INVALID-ALGO",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": key_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["invalid_algorithm"] = "INVALID-ALGO"
         json_metadata["key_length_bytes"] = 10
-        json_metadata["key_md5_matches_key"] = True  # MD5 is valid
+        json_metadata["key_md5_matches_key"] = True
 
         if hasattr(response, "comparison"):
             assert response.aws.status_code == 400, (
@@ -767,11 +733,7 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_message"] = error_msg
             json_metadata["first_validation_error"] = error_code
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
@@ -780,28 +742,26 @@ class TestSSECPutObjectHeaders:
         s3_client,
         test_bucket,
         test_key,
-        test_body,
         make_request,
         json_metadata,
     ):
         """Test validation order: invalid key length vs mismatched MD5."""
         short_key = b"1234567890"  # 10 bytes
         key_b64 = base64.b64encode(short_key).decode("utf-8")
-        # Use wrong MD5
         wrong_md5 = base64.b64encode(hashlib.md5(b"wrong").digest()).decode("utf-8")
 
         headers = {
-            "Content-Type": "text/plain",
+            "Content-Type": "application/octet-stream",
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
             "x-amz-server-side-encryption-customer-key": key_b64,
             "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
         }
 
         response = make_request(
-            "PUT",
+            "POST",
             f"/{test_bucket}/{test_key}",
-            body=test_body,
             headers=headers,
+            query_params="?uploads",
         )
 
         json_metadata["key_length_bytes"] = 10
@@ -827,8 +787,4 @@ class TestSSECPutObjectHeaders:
             json_metadata["error_message"] = error_msg
             json_metadata["first_validation_error"] = error_code
 
-        # Cleanup
-        try:
-            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
-        except Exception:
-            pass
+        self._abort_upload(s3_client, test_bucket, test_key, response)

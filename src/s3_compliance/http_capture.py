@@ -6,8 +6,35 @@ import xml.dom.minidom
 
 from pytest import StashKey
 
-# Shared stash key for HTTP captures - import this in conftest.py files
+# Shared stash keys - import these in conftest.py files
 http_captures_key = StashKey[list]()
+setup_steps_key = StashKey[list]()
+
+
+@dataclass
+class SetupStep:
+    """A single setup operation recorded from a boto3 call."""
+
+    operation: str          # "CreateMultipartUpload", "UploadPart", etc.
+    params: dict = field(default_factory=dict)   # Key params shown in report
+    status: int = 0         # HTTP status from ResponseMetadata
+    result: dict = field(default_factory=dict)   # Key result fields
+    endpoint_name: str = "" # "aws", "custom", or ""
+
+    def to_markdown_row(self, index: int) -> str:
+        """Render as a markdown table row."""
+        params_str = ", ".join(f"{k}: {v}" for k, v in self.params.items())
+        result_str = ", ".join(
+            f"{k}: `{_truncate(str(v), 40)}`"
+            for k, v in self.result.items()
+        )
+        endpoint = self.endpoint_name or "-"
+        return f"| {index} | {self.operation} | {endpoint} | {params_str} | {self.status} | {result_str} |"
+
+
+def _truncate(s: str, max_len: int) -> str:
+    """Truncate string with ellipsis."""
+    return s if len(s) <= max_len else s[:max_len - 3] + "..."
 
 
 @dataclass
@@ -98,6 +125,9 @@ class TestHTTPData:
     markers: list = field(default_factory=list)
     outcome: str = ""  # passed, failed, skipped
     duration: float = 0.0
+
+    # Setup chain (recorded from fixtures via setup_steps fixture)
+    setup_steps: list = field(default_factory=list)  # List[SetupStep]
 
     # Captures (may have multiple requests per test)
     captures: list = field(default_factory=list)  # List[HTTPCapture]

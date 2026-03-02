@@ -15,7 +15,10 @@ from s3_compliance.comparison import (
     ComparisonResponse,
     ComparisonSummary,
 )
-from s3_compliance.http_capture import HTTPCapture, TestHTTPData, http_captures_key
+from s3_compliance.http_capture import (
+    HTTPCapture, TestHTTPData, SetupStep,
+    http_captures_key, setup_steps_key,
+)
 
 
 def ensure_bucket_exists(s3_client, bucket_name, region="us-east-1"):
@@ -91,6 +94,47 @@ def create_test_object(s3_client, test_bucket):
             s3_client.delete_object(Bucket=test_bucket, Key=key)
         except Exception:
             pass
+
+
+@pytest.fixture
+def setup_steps(request):
+    """Fixture that provides a recorder for setup operations.
+
+    Usage in fixtures:
+        def my_fixture(self, ..., setup_steps):
+            mpu = client.create_multipart_upload(Bucket=bucket, Key=key, **ssec)
+            setup_steps("CreateMultipartUpload", mpu, endpoint="aws",
+                        Bucket=bucket, Key=key, SSE_C="AES256")
+    """
+    steps = []
+    request.node.stash[setup_steps_key] = steps
+
+    def _record(operation, response, endpoint="", **key_params):
+        """Record a boto3 setup operation.
+
+        Args:
+            operation: Operation name (e.g. "CreateMultipartUpload")
+            response: boto3 response dict (has ResponseMetadata)
+            endpoint: Endpoint name ("aws", "custom", or "")
+            **key_params: Key parameters to show in report
+        """
+        status = response.get("ResponseMetadata", {}).get("HTTPStatusCode", 0)
+        # Extract only key result fields for the report
+        _useful_keys = {"UploadId", "ETag", "ChecksumCRC32", "ChecksumSHA256",
+                        "ChecksumSHA1", "ChecksumCRC32C", "ChecksumCRC64NVME",
+                        "SSECustomerAlgorithm", "ServerSideEncryption",
+                        "Bucket", "Key", "ContentLength"}
+        result = {k: v for k, v in response.items()
+                  if k != "ResponseMetadata" and k in _useful_keys}
+        steps.append(SetupStep(
+            operation=operation,
+            params=key_params,
+            status=status,
+            result=result,
+            endpoint_name=endpoint,
+        ))
+
+    return _record
 
 
 @pytest.fixture
@@ -460,8 +504,12 @@ def _do_request(
         region=region,
     )
 
-    # Execute the request
-    request_func = getattr(requests, method.lower())
+    # Execute the request (no retries — fail immediately on connection errors)
+    session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(max_retries=0)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    request_func = getattr(session, method.lower())
     return request_func(url, data=body, headers=signed_headers, verify=verify_ssl)
 
 
@@ -543,6 +591,8 @@ def make_request(
         body: bytes = b"",
         headers: dict = None,
         query_params: str = "",
+        custom_body: bytes = None,
+        custom_query_params: str = None,
     ) -> Union[requests.Response, ComparisonResponse]:
         """Make a signed request to S3.
 
@@ -552,6 +602,8 @@ def make_request(
             body: Request body bytes
             headers: Additional headers dict
             query_params: Query string (e.g., "?delete")
+            custom_body: Separate body for custom endpoint in 'both' mode (falls back to body)
+            custom_query_params: Separate query params for custom endpoint in 'both' mode (falls back to query_params)
 
         Returns:
             requests.Response in single mode, ComparisonResponse in both mode
@@ -559,6 +611,10 @@ def make_request(
         req_headers = dict(headers) if headers else {}
 
         if endpoint_mode == "both":
+            # Resolve per-endpoint body and query params
+            actual_custom_body = custom_body if custom_body is not None else body
+            actual_custom_query_params = custom_query_params if custom_query_params is not None else query_params
+
             # Execute request against both endpoints
             aws_resp = _do_request(
                 aws_endpoint_url,
@@ -577,17 +633,17 @@ def make_request(
                 custom_region,
                 method,
                 path,
-                body,
+                actual_custom_body,
                 dict(headers) if headers else None,
-                query_params,
+                actual_custom_query_params,
                 verify_ssl=verify_ssl,
             )
 
             # Capture HTTP details for reporting
             aws_url = f"{aws_endpoint_url}{path}{query_params}"
-            custom_url = f"{custom_endpoint_url}{path}{query_params}"
+            custom_url = f"{custom_endpoint_url}{path}{actual_custom_query_params}"
             aws_capture = _capture_http(method, aws_url, req_headers, body, aws_resp, "aws")
-            custom_capture = _capture_http(method, custom_url, req_headers, body, custom_resp, "custom")
+            custom_capture = _capture_http(method, custom_url, req_headers, actual_custom_body, custom_resp, "custom")
 
             # Compare responses
             comparison = compare_responses(

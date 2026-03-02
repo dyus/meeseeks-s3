@@ -1,15 +1,18 @@
-"""Tests for GetObject with SSE-C (Server-Side Encryption with Customer-Provided Keys).
+"""Tests for HeadObject with SSE-C (Server-Side Encryption with Customer-Provided Keys).
 
-These tests verify S3 behavior when retrieving an SSE-C encrypted object
+These tests verify S3 behavior when calling HeadObject on an SSE-C encrypted object
 with various header combinations and validation errors.
 
 A single SSE-C encrypted object is created once per module and reused
 across all tests.
 
-GetObject for SSE-C requires three headers:
+HeadObject for SSE-C requires three headers:
 - x-amz-server-side-encryption-customer-algorithm: Must be "AES256"
 - x-amz-server-side-encryption-customer-key: Base64-encoded 32-byte key
 - x-amz-server-side-encryption-customer-key-MD5: Base64-encoded MD5 of the key
+
+Note: HEAD responses have no body per HTTP spec, so error details
+are only available via status code and headers.
 """
 
 import base64
@@ -19,15 +22,12 @@ import uuid
 import pytest
 
 from s3_compliance.sse_c import DEFAULT_SSE_C_KEY_BYTES, generate_sse_c_key
-from s3_compliance.xml_utils import extract_error_info
-
-SSE_C_BODY = b"get-object sse-c test content"
 
 
 @pytest.fixture(scope="module")
 def ssec_object_key():
     """Unique key for the SSE-C encrypted object shared across the module."""
-    return f"test-ssec-get-{uuid.uuid4().hex[:8]}"
+    return f"test-ssec-head-{uuid.uuid4().hex[:8]}"
 
 
 @pytest.fixture(scope="module")
@@ -45,7 +45,7 @@ def ssec_object(request, aws_client, test_bucket, setup_test_bucket, ssec_object
     sse_kwargs = dict(
         Bucket=test_bucket,
         Key=ssec_object_key,
-        Body=SSE_C_BODY,
+        Body=b"head-object sse-c test content",
         SSECustomerAlgorithm="AES256",
         SSECustomerKey=base64.b64encode(DEFAULT_SSE_C_KEY_BYTES).decode("utf-8"),
         SSECustomerKeyMD5=base64.b64encode(
@@ -80,23 +80,23 @@ def ssec_object(request, aws_client, test_bucket, setup_test_bucket, ssec_object
             pass
 
 
-@pytest.mark.s3_handler("GetObject")
+@pytest.mark.s3_handler("HeadObject")
 @pytest.mark.sse_c
-class TestSSECGetObjectHeaders:
-    """Test GetObject API with SSE-C header combinations."""
+class TestSSECHeadObjectHeaders:
+    """Test HeadObject API with SSE-C header combinations."""
 
     # =========================================================================
     # Successful Request
     # =========================================================================
 
-    def test_get_ssec_object_with_valid_headers(
+    def test_head_ssec_object_with_valid_headers(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should return decrypted object with all valid SSE-C headers."""
+        """Server should return metadata with all valid SSE-C headers."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
@@ -106,7 +106,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -115,30 +115,28 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 200, (
                 f"AWS expected 200, got {response.aws.status_code}"
             )
-            assert response.aws.content == SSE_C_BODY
             json_metadata["aws_status"] = response.aws.status_code
             json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 200, (
-                f"Expected 200, got {response.status_code}: {response.text[:200]}"
+                f"Expected 200, got {response.status_code}"
             )
-            assert response.content == SSE_C_BODY
             json_metadata["status"] = response.status_code
 
     # =========================================================================
-    # No SSE-C Headers (plain GET on encrypted object)
+    # No SSE-C Headers (plain HEAD on encrypted object)
     # =========================================================================
 
-    def test_get_ssec_object_without_headers_rejected(
+    def test_head_ssec_object_without_headers_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET without any SSE-C headers on encrypted object."""
+        """Server should reject HEAD without any SSE-C headers on encrypted object."""
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
         )
 
@@ -148,36 +146,33 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     # =========================================================================
     # Missing Header Tests (partial SSE-C headers)
     # =========================================================================
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_only_algorithm_rejected(
+    def test_head_ssec_object_only_algorithm_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with only SSE-C algorithm header."""
+        """Server should reject HEAD with only SSE-C algorithm header."""
         headers = {
             "x-amz-server-side-encryption-customer-algorithm": "AES256",
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -189,26 +184,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_only_key_rejected(
+    def test_head_ssec_object_only_key_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with only SSE-C key header."""
+        """Server should reject HEAD with only SSE-C key header."""
         key_b64, _ = generate_sse_c_key()
 
         headers = {
@@ -216,7 +208,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -228,26 +220,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_only_key_md5_rejected(
+    def test_head_ssec_object_only_key_md5_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with only SSE-C key MD5 header."""
+        """Server should reject HEAD with only SSE-C key MD5 header."""
         _, key_md5 = generate_sse_c_key()
 
         headers = {
@@ -255,7 +244,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -267,29 +256,26 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_algorithm_and_key_without_md5_accepted(
+    def test_head_ssec_object_algorithm_and_key_without_md5_accepted(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server accepts GET with algorithm and key but missing MD5.
+        """Server accepts HEAD with algorithm and key but missing MD5.
 
-        Unlike PutObject, GetObject does NOT require the key MD5 header
-        when algorithm and key are provided. AWS returns 200 OK.
+        Like GetObject, HeadObject does NOT require the key MD5 header
+        when algorithm and key are provided.
         """
         key_b64, _ = generate_sse_c_key()
 
@@ -299,7 +285,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -320,14 +306,14 @@ class TestSSECGetObjectHeaders:
             json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_algorithm_and_md5_missing_key_rejected(
+    def test_head_ssec_object_algorithm_and_md5_missing_key_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with algorithm and MD5 but missing key."""
+        """Server should reject HEAD with algorithm and MD5 but missing key."""
         _, key_md5 = generate_sse_c_key()
 
         headers = {
@@ -336,7 +322,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -348,26 +334,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_key_and_md5_missing_algorithm_rejected(
+    def test_head_ssec_object_key_and_md5_missing_algorithm_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with key and MD5 but missing algorithm."""
+        """Server should reject HEAD with key and MD5 but missing algorithm."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
@@ -376,7 +359,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -388,30 +371,27 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     # =========================================================================
     # Invalid Value Tests
     # =========================================================================
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_invalid_algorithm_rejected(
+    def test_head_ssec_object_invalid_algorithm_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with invalid SSE-C algorithm."""
+        """Server should reject HEAD with invalid SSE-C algorithm."""
         key_b64, key_md5 = generate_sse_c_key()
 
         headers = {
@@ -421,7 +401,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -432,26 +412,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_wrong_key_rejected(
+    def test_head_ssec_object_wrong_key_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with a different (wrong) SSE-C key."""
+        """Server should reject HEAD with a different (wrong) SSE-C key."""
         wrong_key_bytes = hashlib.sha256(b"this_is_a_totally_wrong_key").digest()
         key_b64, key_md5 = generate_sse_c_key(wrong_key_bytes)
 
@@ -462,7 +439,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -473,29 +450,26 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 403, (
                 f"AWS expected 403, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 403, (
                 f"Expected 403, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_invalid_key_length_10_rejected(
+    def test_head_ssec_object_invalid_key_length_10_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET with invalid key length (10 bytes).
+        """Server should reject HEAD with invalid key length (10 bytes).
 
-        AWS returns 403 Forbidden for invalid key length on GetObject
-        (unlike PutObject which returns 400).
+        AWS returns 403 Forbidden for invalid key length on HeadObject
+        (same as GetObject, unlike PutObject which returns 400).
         """
         short_key = b"1234567890"
         key_b64, key_md5 = generate_sse_c_key(short_key)
@@ -507,7 +481,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -518,26 +492,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 403, (
                 f"AWS expected 403, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 403, (
                 f"Expected 403, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_mismatched_key_md5_rejected(
+    def test_head_ssec_object_mismatched_key_md5_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET when key MD5 doesn't match key."""
+        """Server should reject HEAD when key MD5 doesn't match key."""
         key_b64, _ = generate_sse_c_key()
         wrong_md5 = base64.b64encode(
             hashlib.md5(b"wrong-key-for-md5-mismatch").digest()
@@ -550,7 +521,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -561,26 +532,23 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_invalid_key_md5_not_base64_rejected(
+    def test_head_ssec_object_invalid_key_md5_not_base64_rejected(
         self,
         test_bucket,
         ssec_object,
         make_request,
         json_metadata,
     ):
-        """Server should reject GET when key MD5 is not valid base64."""
+        """Server should reject HEAD when key MD5 is not valid base64."""
         key_b64, _ = generate_sse_c_key()
 
         headers = {
@@ -590,7 +558,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -601,23 +569,20 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
+            json_metadata["status"] = response.status_code
 
     # =========================================================================
     # Validation Order Tests
     # =========================================================================
 
     @pytest.mark.edge_case
-    def test_get_ssec_object_all_invalid_validation_order(
+    def test_head_ssec_object_all_invalid_validation_order(
         self,
         test_bucket,
         ssec_object,
@@ -636,7 +601,7 @@ class TestSSECGetObjectHeaders:
         }
 
         response = make_request(
-            "GET",
+            "HEAD",
             f"/{test_bucket}/{ssec_object}",
             headers=headers,
         )
@@ -649,15 +614,10 @@ class TestSSECGetObjectHeaders:
             assert response.aws.status_code == 400, (
                 f"AWS expected 400, got {response.aws.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.aws.text)
-            json_metadata["aws_error_code"] = error_code
-            json_metadata["aws_error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["custom_status"] = response.custom.status_code
         else:
             assert response.status_code == 400, (
                 f"Expected 400, got {response.status_code}"
             )
-            error_code, error_msg = extract_error_info(response.text)
-            json_metadata["error_code"] = error_code
-            json_metadata["error_message"] = error_msg
-            json_metadata["first_validation_error"] = error_code
+            json_metadata["status"] = response.status_code

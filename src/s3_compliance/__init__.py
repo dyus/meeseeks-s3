@@ -24,6 +24,8 @@ from s3_compliance.markdown_report import (
     generate_markdown_report,
     generate_grouped_reports,
 )
+from s3_compliance.sse_c import DEFAULT_SSE_C_KEY_BYTES, generate_sse_c_key
+from s3_compliance.xml_utils import extract_error_info, extract_upload_id
 
 __all__ = [
     # Client
@@ -53,4 +55,10 @@ __all__ = [
     # Markdown Report
     "generate_markdown_report",
     "generate_grouped_reports",
+    # SSE-C
+    "DEFAULT_SSE_C_KEY_BYTES",
+    "generate_sse_c_key",
+    # XML Utils
+    "extract_error_info",
+    "extract_upload_id",
 ]

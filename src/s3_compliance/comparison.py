@@ -79,7 +79,15 @@ IGNORE_XML_ELEMENTS = {
     "RequestId",
     "HostId",
     "Resource",
+    "UploadId",
+    "Location",
+    "ETag",
 }
+
+# XML element prefixes that are dynamic and should be ignored
+IGNORE_XML_ELEMENT_PREFIXES = (
+    "Checksum",
+)
 
 
 @dataclass
@@ -168,7 +176,7 @@ def xml_to_dict(element: ET.Element) -> dict:
         tag = tag.split("}")[1]
 
     # Skip ignored elements
-    if tag in IGNORE_XML_ELEMENTS:
+    if tag in IGNORE_XML_ELEMENTS or tag.startswith(IGNORE_XML_ELEMENT_PREFIXES):
         return {}
 
     # Get text content
@@ -186,7 +194,7 @@ def xml_to_dict(element: ET.Element) -> dict:
         if "}" in child_tag:
             child_tag = child_tag.split("}")[1]
 
-        if child_tag in IGNORE_XML_ELEMENTS:
+        if child_tag in IGNORE_XML_ELEMENTS or child_tag.startswith(IGNORE_XML_ELEMENT_PREFIXES):
             continue
 
         child_dict = xml_to_dict(child)

@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 from s3_compliance.client import S3ClientFactory
-from s3_compliance.http_capture import TestHTTPData, http_captures_key
+from s3_compliance.http_capture import TestHTTPData, http_captures_key, setup_steps_key
 
 # Global storage for test results (used by markdown report generator)
 _test_results: list[TestHTTPData] = []
@@ -90,6 +90,9 @@ def pytest_configure(config):
     )
     config.addinivalue_line(
         "markers", "put_object: mark test as PutObject API test"
+    )
+    config.addinivalue_line(
+        "markers", "put_bucket_versioning: PutBucketVersioning handler tests"
     )
 
 
@@ -290,6 +293,10 @@ def pytest_runtest_makereport(item, call):
                         capture_data.get("comparison"),
                     )
 
+        # Get setup steps from stash if available
+        if setup_steps_key in item.stash:
+            test_data.setup_steps = item.stash[setup_steps_key]
+
         # Store for report generation
         _test_results.append(test_data)
 
@@ -297,26 +304,65 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """Generate markdown reports at end of session."""
-    if not session.config.getoption("--md-report"):
-        return
+    """Generate markdown reports and compliance summary at end of session."""
+    endpoint_mode = session.config.getoption("--endpoint")
 
-    if not _test_results:
-        return
+    if session.config.getoption("--md-report") and _test_results:
+        from s3_compliance.markdown_report import generate_grouped_reports
 
-    from s3_compliance.markdown_report import generate_grouped_reports
+        output_dir = Path(session.config.getoption("--md-report-dir"))
+        prefix = session.config.getoption("--md-report-prefix")
 
-    output_dir = Path(session.config.getoption("--md-report-dir"))
-    prefix = session.config.getoption("--md-report-prefix")
+        if prefix is None:
+            prefix = datetime.now().strftime("%Y-%m-%d_%H%M%S")
 
-    if prefix is None:
-        prefix = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        generated = generate_grouped_reports(_test_results, output_dir, prefix)
 
-    generated = generate_grouped_reports(_test_results, output_dir, prefix)
+        print(f"\n{'=' * 60}")
+        print("Markdown Reports Generated:")
+        print("=" * 60)
+        for path in generated:
+            print(f"  {path}")
+        print("=" * 60)
 
-    print(f"\n{'=' * 60}")
-    print("Markdown Reports Generated:")
-    print("=" * 60)
-    for path in generated:
-        print(f"  {path}")
-    print("=" * 60)
+    # Print compliance summary for --endpoint=both mode
+    if endpoint_mode == "both" and _test_results:
+        compared = [r for r in _test_results if r.comparison_result]
+        if not compared:
+            return
+
+        compliant = sum(1 for r in compared if r.comparison_result.get("is_compliant"))
+        non_compliant = len(compared) - compliant
+
+        print(f"\n{'=' * 60}")
+        print(f"Compliance Summary: {compliant} compliant, {non_compliant} non-compliant ({len(compared)} total)")
+        print("=" * 60)
+
+        if non_compliant:
+            non_compliant_results = [r for r in compared if not r.comparison_result.get("is_compliant")]
+
+            print("Non-compliant tests:")
+            # Calculate column width from test names
+            name_width = max(len(r.test_name) for r in non_compliant_results)
+            name_width = max(name_width, 4)  # minimum "Test" header width
+
+            header = f"  {'Test':<{name_width}} | {'AWS':<30} | Custom"
+            print(header)
+
+            for r in non_compliant_results:
+                comp = r.comparison_result
+                aws_desc = str(comp.get("aws_status", ""))
+                if comp.get("aws_error_code"):
+                    aws_desc += f" {comp['aws_error_code']}"
+
+                custom_desc = str(comp.get("custom_status", ""))
+                if comp.get("custom_error_code"):
+                    custom_desc += f" {comp['custom_error_code']}"
+
+                # Note body differences when status/error match
+                if aws_desc == custom_desc and comp.get("body_differences"):
+                    custom_desc += " (body differs)"
+
+                print(f"  {r.test_name:<{name_width}} | {aws_desc:<30} | {custom_desc}")
+
+        print("=" * 60)

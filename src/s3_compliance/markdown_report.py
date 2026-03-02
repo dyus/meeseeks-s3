@@ -52,6 +52,57 @@ def generate_markdown_report(
         "",
     ])
 
+    # Compliance section (only if there are comparison results)
+    compared = [r for r in results if r.comparison_result]
+    if compared:
+        compliant = sum(1 for r in compared if r.comparison_result.get("is_compliant"))
+        non_compliant = len(compared) - compliant
+
+        lines.extend([
+            "## Compliance",
+            "",
+            "| Metric | Count |",
+            "|--------|-------|",
+            f"| Compliant | {compliant} |",
+            f"| Non-compliant | {non_compliant} |",
+            f"| Total compared | {len(compared)} |",
+            "",
+        ])
+
+        non_compliant_results = [r for r in compared if not r.comparison_result.get("is_compliant")]
+        if non_compliant_results:
+            lines.extend([
+                "### Non-compliant",
+                "",
+                "| Test | AWS | Custom | Diff |",
+                "|------|-----|--------|------|",
+            ])
+
+            for r in non_compliant_results:
+                comp = r.comparison_result
+                aws_desc = str(comp.get("aws_status", ""))
+                if comp.get("aws_error_code"):
+                    aws_desc += f" {comp['aws_error_code']}"
+
+                custom_desc = str(comp.get("custom_status", ""))
+                if comp.get("custom_error_code"):
+                    custom_desc += f" {comp['custom_error_code']}"
+
+                diff_notes = []
+                if not comp.get("status_match"):
+                    diff_notes.append("Status differs")
+                if not comp.get("error_code_match"):
+                    diff_notes.append("Error code differs")
+                if comp.get("body_differences"):
+                    diff_notes.append("Body differs")
+                if comp.get("header_differences"):
+                    diff_notes.append("Headers differ")
+                diff_str = ", ".join(diff_notes) if diff_notes else "-"
+
+                lines.append(f"| {r.test_name} | {aws_desc} | {custom_desc} | {diff_str} |")
+
+            lines.append("")
+
     # Group results
     grouped = _group_results(results, group_by)
 
@@ -133,6 +184,10 @@ def _render_test(result: TestHTTPData) -> list[str]:
         lines.append(f"**Markers:** {markers_str}")
         lines.append("")
 
+    # Setup steps (fixture chain)
+    if result.setup_steps:
+        lines.extend(_render_setup_steps(result.setup_steps))
+
     # Comparison mode
     if result.comparison_result:
         lines.extend(_render_comparison(result))
@@ -153,6 +208,20 @@ def _render_test(result: TestHTTPData) -> list[str]:
             lines.append("")
 
     lines.extend(["---", ""])
+    return lines
+
+
+def _render_setup_steps(steps: list) -> list[str]:
+    """Render setup chain as a markdown table."""
+    lines = [
+        "#### Setup",
+        "",
+        "| # | Operation | Endpoint | Params | Status | Result |",
+        "|---|-----------|----------|--------|--------|--------|",
+    ]
+    for i, step in enumerate(steps, 1):
+        lines.append(step.to_markdown_row(i))
+    lines.append("")
     return lines
 
 
