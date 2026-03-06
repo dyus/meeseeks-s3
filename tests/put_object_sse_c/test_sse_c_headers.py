@@ -663,17 +663,16 @@ class TestSSECPutObjectHeaders:
 
         This test helps understand the server's validation order:
         - Invalid algorithm (AES256-INVALID)
-        - Invalid key (too short)
+        - Invalid key (not valid base64)
         - Invalid MD5 (doesn't match key)
         """
-        short_key = b"short-key"  # Invalid length
-        key_b64 = base64.b64encode(short_key).decode("utf-8")
+        invalid_key = "not-valid-base64!!!"
         wrong_md5 = base64.b64encode(hashlib.md5(b"wrong").digest()).decode("utf-8")
 
         headers = {
             "Content-Type": "text/plain",
             "x-amz-server-side-encryption-customer-algorithm": "AES256-INVALID",
-            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key": invalid_key,
             "x-amz-server-side-encryption-customer-key-MD5": wrong_md5,
         }
 
@@ -685,8 +684,66 @@ class TestSSECPutObjectHeaders:
         )
 
         json_metadata["invalid_algorithm"] = "AES256-INVALID"
-        json_metadata["invalid_key_length"] = len(short_key)
+        json_metadata["invalid_key_base64"] = invalid_key
         json_metadata["key_md5_matches_key"] = False
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["first_validation_error"] = error_code
+            assert response.comparison.is_compliant, (
+                f"Custom S3 doesn't match AWS: {response.diff_summary}"
+            )
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+            json_metadata["first_validation_error"] = error_code
+
+        # Cleanup
+        try:
+            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
+        except Exception:
+            pass
+
+    @pytest.mark.edge_case
+    @pytest.mark.usefixtures("setup_test_bucket")
+    def test_sse_c_invalid_key_base64_with_invalid_algorithm(
+        self,
+        s3_client,
+        test_bucket,
+        test_key,
+        test_body,
+        make_request,
+        json_metadata,
+    ):
+        """Test validation order: invalid base64 customer key + invalid algorithm."""
+        invalid_key = "not-valid-base64!!!"
+        key_md5 = base64.b64encode(hashlib.md5(b"anything").digest()).decode("utf-8")
+
+        headers = {
+            "Content-Type": "text/plain",
+            "x-amz-server-side-encryption-customer-algorithm": "INVALID-ALGO",
+            "x-amz-server-side-encryption-customer-key": invalid_key,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}/{test_key}",
+            body=test_body,
+            headers=headers,
+        )
+
+        json_metadata["invalid_algorithm"] = "INVALID-ALGO"
+        json_metadata["invalid_key_base64"] = invalid_key
 
         if hasattr(response, "comparison"):
             assert response.aws.status_code == 400, (

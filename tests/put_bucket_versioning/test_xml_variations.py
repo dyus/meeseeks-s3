@@ -23,10 +23,11 @@ class TestPutBucketVersioningXMLVariations:
     def test_empty_versioning_configuration(
         self, test_bucket, make_request, json_metadata
     ):
-        """<VersioningConfiguration/> with no Status element."""
+        """<VersioningConfiguration></VersioningConfiguration> with no Status element."""
         body = (
             b'<?xml version="1.0" encoding="UTF-8"?>'
-            b'<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"/>'
+            b'<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">'
+            b"</VersioningConfiguration>"
         )
         headers = {"Content-Type": "application/xml"}
 
@@ -58,11 +59,11 @@ class TestPutBucketVersioningXMLVariations:
     def test_empty_status_element(
         self, test_bucket, make_request, json_metadata
     ):
-        """<Status/> with no text content."""
+        """<Status></Status> with no text content."""
         body = (
             b'<?xml version="1.0" encoding="UTF-8"?>'
             b'<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">'
-            b"<Status/>"
+            b"<Status></Status>"
             b"</VersioningConfiguration>"
         )
         headers = {"Content-Type": "application/xml"}

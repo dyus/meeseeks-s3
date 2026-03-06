@@ -568,16 +568,21 @@ def make_request(
     def _capture_http(
         method: str,
         url: str,
-        req_headers: dict,
         req_body: bytes,
         response: requests.Response,
         endpoint_name: str = "",
     ) -> HTTPCapture:
-        """Create HTTPCapture from request/response."""
+        """Create HTTPCapture from request/response.
+
+        Uses response.request.headers to capture the actual signed headers
+        that were sent over the wire (including Content-Length,
+        x-amz-content-sha256, Authorization, etc.).
+        """
+        actual_headers = dict(response.request.headers) if response.request else {}
         return HTTPCapture(
             method=method,
             url=url,
-            request_headers=dict(req_headers) if req_headers else {},
+            request_headers=actual_headers,
             request_body=req_body,
             status_code=response.status_code,
             response_headers=dict(response.headers),
@@ -642,8 +647,8 @@ def make_request(
             # Capture HTTP details for reporting
             aws_url = f"{aws_endpoint_url}{path}{query_params}"
             custom_url = f"{custom_endpoint_url}{path}{actual_custom_query_params}"
-            aws_capture = _capture_http(method, aws_url, req_headers, body, aws_resp, "aws")
-            custom_capture = _capture_http(method, custom_url, req_headers, actual_custom_body, custom_resp, "custom")
+            aws_capture = _capture_http(method, aws_url, body, aws_resp, "aws")
+            custom_capture = _capture_http(method, custom_url, actual_custom_body, custom_resp, "custom")
 
             # Compare responses
             comparison = compare_responses(
@@ -711,7 +716,7 @@ def make_request(
 
             # Capture HTTP details for reporting
             url = f"{endpoint_url}{path}{query_params}"
-            capture = _capture_http(method, url, req_headers, body, response, endpoint_mode)
+            capture = _capture_http(method, url, body, response, endpoint_mode)
             request.node.stash[http_captures_key].append({"single": capture})
 
             # Show HTTP details if requested
