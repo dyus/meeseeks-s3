@@ -80,8 +80,14 @@ IGNORE_XML_ELEMENTS = {
     "HostId",
     "Resource",
     "UploadId",
-    "Location",
+}
+
+# XML elements that should be present and non-empty in both responses,
+# but their values are not compared (differ per endpoint by nature)
+PRESENCE_ONLY_XML_ELEMENTS = {
     "ETag",
+    "LastModified",
+    "Location",
 }
 
 # XML element prefixes that are dynamic and should be ignored
@@ -179,6 +185,13 @@ def xml_to_dict(element: ET.Element) -> dict:
     if tag in IGNORE_XML_ELEMENTS or tag.startswith(IGNORE_XML_ELEMENT_PREFIXES):
         return {}
 
+    # Presence-only elements: check exists and non-empty, but don't compare values
+    if tag in PRESENCE_ONLY_XML_ELEMENTS:
+        text = element.text.strip() if element.text else ""
+        if text:
+            return {"_present": True}
+        return {"_present": False}
+
     # Get text content
     if element.text and element.text.strip():
         result["_text"] = element.text.strip()
@@ -195,6 +208,12 @@ def xml_to_dict(element: ET.Element) -> dict:
             child_tag = child_tag.split("}")[1]
 
         if child_tag in IGNORE_XML_ELEMENTS or child_tag.startswith(IGNORE_XML_ELEMENT_PREFIXES):
+            continue
+
+        if child_tag in PRESENCE_ONLY_XML_ELEMENTS:
+            text = child.text.strip() if child.text else ""
+            child_dict = {"_present": bool(text)}
+            children[child_tag] = child_dict
             continue
 
         child_dict = xml_to_dict(child)

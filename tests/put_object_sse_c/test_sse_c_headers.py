@@ -889,3 +889,225 @@ class TestSSECPutObjectHeaders:
             s3_client.delete_object(Bucket=test_bucket, Key=test_key)
         except Exception:
             pass
+
+    # =========================================================================
+    # Invalid customer key values
+    # =========================================================================
+
+    @pytest.mark.edge_case
+    def test_sse_c_customer_key_decodes_to_short_value(
+        self,
+        s3_client,
+        test_bucket,
+        test_key,
+        test_body,
+        make_request,
+        json_metadata,
+    ):
+        """Test PUT with customer key '####' that decodes to 0 bytes via lenient base64."""
+        _, key_md5 = generate_sse_c_key()
+
+        headers = {
+            "Content-Type": "text/plain",
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": "####",
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}/{test_key}",
+            body=test_body,
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = "####"
+
+        if hasattr(response, "comparison"):
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["status"] = response.status_code
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+        # Cleanup
+        try:
+            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
+        except Exception:
+            pass
+
+    @pytest.mark.edge_case
+    def test_sse_c_empty_customer_key(
+        self,
+        s3_client,
+        test_bucket,
+        test_key,
+        test_body,
+        make_request,
+        json_metadata,
+    ):
+        """Test PUT with empty string as customer key."""
+        _, key_md5 = generate_sse_c_key()
+
+        headers = {
+            "Content-Type": "text/plain",
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": "",
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}/{test_key}",
+            body=test_body,
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = ""
+
+        if hasattr(response, "comparison"):
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["status"] = response.status_code
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+        # Cleanup
+        try:
+            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
+        except Exception:
+            pass
+
+    @pytest.mark.edge_case
+    @pytest.mark.parametrize(
+        "garbage_position",
+        [
+            pytest.param("suffix", id="garbage-at-end"),
+            pytest.param("prefix", id="garbage-at-start"),
+            pytest.param("middle", id="garbage-in-middle"),
+            pytest.param("scattered", id="garbage-scattered"),
+        ],
+    )
+    def test_sse_c_customer_key_with_garbage_chars_in_base64(
+        self,
+        s3_client,
+        test_bucket,
+        test_key,
+        test_body,
+        make_request,
+        json_metadata,
+        garbage_position,
+    ):
+        """Test PUT with valid 32-byte key base64 + garbage chars at various positions.
+
+        AWS uses lenient base64 decoder — strips non-base64 chars, decodes rest.
+        MD5 is from the original 32-byte key.
+        """
+        key_b64, key_md5 = generate_sse_c_key()
+        garbage = "!!!!#"
+
+        if garbage_position == "suffix":
+            dirty_key = key_b64 + garbage
+        elif garbage_position == "prefix":
+            dirty_key = garbage + key_b64
+        elif garbage_position == "middle":
+            mid = len(key_b64) // 2
+            dirty_key = key_b64[:mid] + garbage + key_b64[mid:]
+        else:  # scattered
+            dirty_key = "!" + key_b64[:8] + "#" + key_b64[8:20] + "!!" + key_b64[20:] + "#"
+
+        headers = {
+            "Content-Type": "text/plain",
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": dirty_key,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}/{test_key}",
+            body=test_body,
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = dirty_key
+        json_metadata["garbage_position"] = garbage_position
+
+        if hasattr(response, "comparison"):
+            json_metadata["aws_status"] = response.aws.status_code
+            if response.aws.status_code != 200:
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            json_metadata["status"] = response.status_code
+            if response.status_code != 200:
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+
+        # Cleanup
+        try:
+            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
+        except Exception:
+            pass
+
+    @pytest.mark.edge_case
+    def test_sse_c_customer_key_decodes_to_1_byte(
+        self,
+        s3_client,
+        test_bucket,
+        test_key,
+        test_body,
+        make_request,
+        json_metadata,
+    ):
+        """Test PUT with customer key that decodes to 1 byte (AQ==)."""
+        short_key = b"\x01"
+        key_b64, key_md5 = generate_sse_c_key(short_key)
+
+        headers = {
+            "Content-Type": "text/plain",
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}/{test_key}",
+            body=test_body,
+            headers=headers,
+        )
+
+        json_metadata["key_b64"] = key_b64
+        json_metadata["key_decoded_length"] = 1
+
+        if hasattr(response, "comparison"):
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["status"] = response.status_code
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+        # Cleanup
+        try:
+            s3_client.delete_object(Bucket=test_bucket, Key=test_key)
+        except Exception:
+            pass

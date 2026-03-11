@@ -612,9 +612,509 @@ class TestSSECGetObjectHeaders:
             json_metadata["error_code"] = error_code
             json_metadata["error_message"] = error_msg
 
+    @pytest.mark.edge_case
+    def test_get_ssec_object_invalid_key_not_base64_rejected(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Server should reject GET when customer key is not valid base64.
+
+        AWS decodes 'not-valid-base64!!!' into some bytes (lenient decoder),
+        then compares MD5 — returns MD5 mismatch.
+        """
+        _, key_md5 = generate_sse_c_key()
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": "not-valid-base64!!!",
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["invalid_base64_key"] = "not-valid-base64!!!"
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_key_decodes_to_short_rejected(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Server should reject GET when customer key decodes to too few bytes.
+
+        '####' decodes to 0 bytes via lenient base64. AWS returns
+        'The secret key was invalid - too short.' with ArgumentValue echoed.
+        """
+        _, key_md5 = generate_sse_c_key()
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": "####",
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = "####"
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_empty_key_rejected(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Server should reject GET when customer key is empty string.
+
+        AWS returns 'The secret key was invalid - too short.'
+        """
+        _, key_md5 = generate_sse_c_key()
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": "",
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = ""
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    # =========================================================================
+    # SSE-C headers on non-encrypted object
+    # =========================================================================
+
+    @pytest.mark.edge_case
+    def test_get_non_encrypted_object_with_ssec_headers(
+        self,
+        test_bucket,
+        make_request,
+        json_metadata,
+        request,
+        aws_client,
+    ):
+        """Server should reject GET with SSE-C headers on a non-encrypted object.
+
+        AWS returns 400 InvalidRequest: "The encryption parameters are not
+        applicable to this object."
+        """
+        import os
+        from s3_compliance.client import S3ClientFactory
+
+        plain_key = f"test-plain-get-ssec-{uuid.uuid4().hex[:8]}"
+        plain_body = b"plain object without encryption"
+
+        endpoint_mode = request.config.getoption("--endpoint")
+
+        # Create plain (non-encrypted) object on endpoint(s)
+        custom_cl = None
+        if os.getenv("S3_ENDPOINT") and endpoint_mode in ("custom", "both"):
+            custom_cl = S3ClientFactory().create_client("custom")
+
+        if endpoint_mode in ("aws", "both"):
+            aws_client.put_object(Bucket=test_bucket, Key=plain_key, Body=plain_body)
+        if custom_cl:
+            custom_cl.put_object(Bucket=test_bucket, Key=plain_key, Body=plain_body)
+
+        try:
+            key_b64, key_md5 = generate_sse_c_key()
+
+            headers = {
+                "x-amz-server-side-encryption-customer-algorithm": "AES256",
+                "x-amz-server-side-encryption-customer-key": key_b64,
+                "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+            }
+
+            response = make_request(
+                "GET",
+                f"/{test_bucket}/{plain_key}",
+                headers=headers,
+            )
+
+            json_metadata["object_encrypted"] = False
+            json_metadata["ssec_headers_sent"] = True
+
+            if hasattr(response, "comparison"):
+                assert response.aws.status_code == 400, (
+                    f"AWS expected 400, got {response.aws.status_code}: {response.aws.text[:200]}"
+                )
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_status"] = response.aws.status_code
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+                json_metadata["custom_status"] = response.custom.status_code
+            else:
+                assert response.status_code == 400, (
+                    f"Expected 400, got {response.status_code}: {response.text[:200]}"
+                )
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["status"] = response.status_code
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+        finally:
+            # Cleanup
+            if endpoint_mode in ("aws", "both"):
+                try:
+                    aws_client.delete_object(Bucket=test_bucket, Key=plain_key)
+                except Exception:
+                    pass
+            if custom_cl:
+                try:
+                    custom_cl.delete_object(Bucket=test_bucket, Key=plain_key)
+                except Exception:
+                    pass
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_key_md5_decodes_to_1_byte(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Test GET when customerKeyMD5 decodes to exactly 1 byte.
+
+        Normal MD5 is 16 bytes. Here we send a base64 value that decodes
+        to just 1 byte to see how AWS handles it.
+        """
+        key_b64, _ = generate_sse_c_key()
+        # 1 byte -> base64 = "AQ=="
+        short_md5 = base64.b64encode(b"\x01").decode("utf-8")
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": short_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_md5_value"] = short_md5
+        json_metadata["key_md5_decoded_length"] = 1
+
+        if hasattr(response, "comparison"):
+            # Don't assert status — probe first
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["status"] = response.status_code
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_key_md5_100_bytes(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Test GET when customerKeyMD5 decodes to 100 bytes (random).
+
+        Checks whether AWS validates MD5 length or just compares bytes.
+        """
+        key_b64, _ = generate_sse_c_key()
+        import os
+        random_100 = os.urandom(100)
+        long_md5 = base64.b64encode(random_100).decode("utf-8")
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": long_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_md5_decoded_length"] = 100
+
+        if hasattr(response, "comparison"):
+            json_metadata["aws_status"] = response.aws.status_code
+            if response.aws.status_code != 200:
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            json_metadata["status"] = response.status_code
+            if response.status_code != 200:
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_key_md5_100_bytes_correct_prefix(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Test GET when customerKeyMD5 is 100 bytes starting with correct 16-byte MD5.
+
+        Checks whether AWS compares only first 16 bytes or full value.
+        """
+        key_b64, _ = generate_sse_c_key()
+        correct_md5 = hashlib.md5(DEFAULT_SSE_C_KEY_BYTES).digest()
+        padded = correct_md5 + b"\x00" * 84  # 100 bytes, starts with correct MD5
+        long_md5 = base64.b64encode(padded).decode("utf-8")
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": long_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_md5_decoded_length"] = 100
+        json_metadata["correct_prefix"] = True
+
+        if hasattr(response, "comparison"):
+            json_metadata["aws_status"] = response.aws.status_code
+            if response.aws.status_code != 200:
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            json_metadata["status"] = response.status_code
+            if response.status_code != 200:
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_empty_key_md5(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Test GET when customerKeyMD5 is empty string (0 bytes)."""
+        key_b64, _ = generate_sse_c_key()
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": "",
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_md5_value"] = ""
+        json_metadata["key_md5_decoded_length"] = 0
+
+        if hasattr(response, "comparison"):
+            json_metadata["aws_status"] = response.aws.status_code
+            if response.aws.status_code != 200:
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            json_metadata["status"] = response.status_code
+            if response.status_code != 200:
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    @pytest.mark.parametrize(
+        "garbage_position",
+        [
+            pytest.param("suffix", id="garbage-at-end"),
+            pytest.param("prefix", id="garbage-at-start"),
+            pytest.param("middle", id="garbage-in-middle"),
+            pytest.param("scattered", id="garbage-scattered"),
+        ],
+    )
+    def test_get_ssec_object_key_with_garbage_chars_in_base64(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+        garbage_position,
+    ):
+        """Test GET with valid 32-byte key base64 + garbage chars at various positions.
+
+        AWS uses lenient base64 decoder — strips non-base64 chars, decodes rest.
+        MD5 is from the original 32-byte key.
+        """
+        key_b64, key_md5 = generate_sse_c_key()
+        garbage = "!!!!#"
+
+        if garbage_position == "suffix":
+            dirty_key = key_b64 + garbage
+        elif garbage_position == "prefix":
+            dirty_key = garbage + key_b64
+        elif garbage_position == "middle":
+            mid = len(key_b64) // 2
+            dirty_key = key_b64[:mid] + garbage + key_b64[mid:]
+        else:  # scattered
+            dirty_key = "!" + key_b64[:8] + "#" + key_b64[8:20] + "!!" + key_b64[20:] + "#"
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256",
+            "x-amz-server-side-encryption-customer-key": dirty_key,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["key_value"] = dirty_key
+        json_metadata["garbage_position"] = garbage_position
+
+        if hasattr(response, "comparison"):
+            json_metadata["aws_status"] = response.aws.status_code
+            if response.aws.status_code != 200:
+                error_code, error_msg = extract_error_info(response.aws.text)
+                json_metadata["aws_error_code"] = error_code
+                json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            json_metadata["status"] = response.status_code
+            if response.status_code != 200:
+                error_code, error_msg = extract_error_info(response.text)
+                json_metadata["error_code"] = error_code
+                json_metadata["error_message"] = error_msg
+
     # =========================================================================
     # Validation Order Tests
     # =========================================================================
+
+    @pytest.mark.edge_case
+    def test_get_ssec_object_invalid_algorithm_and_short_key(
+        self,
+        test_bucket,
+        ssec_object,
+        make_request,
+        json_metadata,
+    ):
+        """Test which error wins: invalid algorithm or short key.
+
+        Both algorithm and key length are invalid, but MD5 matches the short key.
+        Shows AWS validation priority between these two checks.
+        """
+        short_key = b"short-key"
+        key_b64, key_md5 = generate_sse_c_key(short_key)
+
+        headers = {
+            "x-amz-server-side-encryption-customer-algorithm": "AES256-INVALID",
+            "x-amz-server-side-encryption-customer-key": key_b64,
+            "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+        }
+
+        response = make_request(
+            "GET",
+            f"/{test_bucket}/{ssec_object}",
+            headers=headers,
+        )
+
+        json_metadata["invalid_algorithm"] = "AES256-INVALID"
+        json_metadata["key_length_bytes"] = len(short_key)
+        json_metadata["key_md5_matches_key"] = True
+
+        if hasattr(response, "comparison"):
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_status"] = response.aws.status_code
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            json_metadata["custom_status"] = response.custom.status_code
+        else:
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["status"] = response.status_code
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
 
     @pytest.mark.edge_case
     def test_get_ssec_object_all_invalid_validation_order(

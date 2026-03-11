@@ -578,6 +578,83 @@ class TestSSECHeadObjectHeaders:
             json_metadata["status"] = response.status_code
 
     # =========================================================================
+    # SSE-C headers on non-encrypted object
+    # =========================================================================
+
+    @pytest.mark.edge_case
+    def test_head_non_encrypted_object_with_ssec_headers(
+        self,
+        test_bucket,
+        make_request,
+        json_metadata,
+        request,
+        aws_client,
+    ):
+        """Server should reject HEAD with SSE-C headers on a non-encrypted object.
+
+        AWS returns 400 InvalidRequest: "The encryption parameters are not
+        applicable to this object."
+        Note: HEAD responses have no body, so only status code is checked.
+        """
+        import os
+        from s3_compliance.client import S3ClientFactory
+
+        plain_key = f"test-plain-head-ssec-{uuid.uuid4().hex[:8]}"
+        plain_body = b"plain object without encryption"
+
+        endpoint_mode = request.config.getoption("--endpoint")
+
+        custom_cl = None
+        if os.getenv("S3_ENDPOINT") and endpoint_mode in ("custom", "both"):
+            custom_cl = S3ClientFactory().create_client("custom")
+
+        if endpoint_mode in ("aws", "both"):
+            aws_client.put_object(Bucket=test_bucket, Key=plain_key, Body=plain_body)
+        if custom_cl:
+            custom_cl.put_object(Bucket=test_bucket, Key=plain_key, Body=plain_body)
+
+        try:
+            key_b64, key_md5 = generate_sse_c_key()
+
+            headers = {
+                "x-amz-server-side-encryption-customer-algorithm": "AES256",
+                "x-amz-server-side-encryption-customer-key": key_b64,
+                "x-amz-server-side-encryption-customer-key-MD5": key_md5,
+            }
+
+            response = make_request(
+                "HEAD",
+                f"/{test_bucket}/{plain_key}",
+                headers=headers,
+            )
+
+            json_metadata["object_encrypted"] = False
+            json_metadata["ssec_headers_sent"] = True
+
+            if hasattr(response, "comparison"):
+                json_metadata["aws_status"] = response.aws.status_code
+                json_metadata["custom_status"] = response.custom.status_code
+                assert response.aws.status_code == 400, (
+                    f"AWS expected 400, got {response.aws.status_code}"
+                )
+            else:
+                json_metadata["status"] = response.status_code
+                assert response.status_code == 400, (
+                    f"Expected 400, got {response.status_code}"
+                )
+        finally:
+            if endpoint_mode in ("aws", "both"):
+                try:
+                    aws_client.delete_object(Bucket=test_bucket, Key=plain_key)
+                except Exception:
+                    pass
+            if custom_cl:
+                try:
+                    custom_cl.delete_object(Bucket=test_bucket, Key=plain_key)
+                except Exception:
+                    pass
+
+    # =========================================================================
     # Validation Order Tests
     # =========================================================================
 
