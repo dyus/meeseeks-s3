@@ -1,24 +1,26 @@
 [
   {
     "response": {
-      "status_code": 400,
+      "status_code": 200,
       "headers": {
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "en2FzrTbaGmbIvbm1HrboA==",
+        "x-amz-copy-source-version-id": "xAkBWmexCJ1Mm0ySNR9iWoymDoy7su8o",
         "Content-Type": "application/xml",
-        "Transfer-Encoding": "chunked",
-        "Connection": "close"
+        "Content-Length": "220"
       },
-      "body": "<Error><Code>InvalidRequest</Code><Message>The provided encryption parameters did not match the ones used originally.</Message><RequestId>CPQGTRJ55BWB3Q2Y</RequestId><HostId>we0nhtKYLPiOgCUaVoikyJPM18s4XFVNk7ciRkM2MDDV/buOWIdzocWAP852yK41TDJoKEeKdBc=</HostId></Error>"
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CopyPartResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><LastModified>2026-03-16T20:44:22.000Z</LastModified><ETag>\"361921496e0ebe094396e8bae2308241\"</ETag></CopyPartResult>"
     },
     "request": {
       "method": "PUT",
-      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-0be837f2-ssec",
-      "query_params": "?uploadId=UcO0on.fI0kizFefjxJIffEWaDGqfW7dnmjj2A8tlIcCslAsHyo1.2n_AABxZA.Ymejq7kYJHvpT9IcVYwzY_7aIsawN.5O0VXR6rYbUW3ZTFOX_ZDthTQjFSYfggAEf&partNumber=3",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-12ad158e-ssec-alt",
+      "query_params": "?uploadId=7tGdcJVNKBU4ZysRViRUtMkkeVWBh1tUjzeksTMNHbi23MIk5XeQs31iXd3neDKGXj1QkTmRngCpBvfvzswyR3Ta7awgO0jgJVh6p1600f_ugC26I3V2BZwTRBCfnU9A&partNumber=1",
       "headers": {
         "User-Agent": "python-requests/2.32.5",
         "Accept-Encoding": "gzip, deflate",
         "Accept": "*/*",
         "Connection": "keep-alive",
-        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-1608f023",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-39d694f5",
         "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
         "x-amz-copy-source-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
         "x-amz-copy-source-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
@@ -27,7 +29,7 @@
         "x-amz-server-side-encryption-customer-key-MD5": "en2FzrTbaGmbIvbm1HrboA==",
         "Content-Length": "0",
         "x-amz-content-sha256": "[REDACTED]",
-        "X-Amz-Date": "20260316T195723Z",
+        "X-Amz-Date": "20260316T204420Z",
         "Authorization": "[REDACTED]"
       },
       "body": ""
