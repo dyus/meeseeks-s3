@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidRequest</Code><Message>The provided encryption parameters did not match the ones used originally.</Message><RequestId>A700WEP722W99W33</RequestId><HostId>c3Oj3wG3d+yE1WpRdCeBcbrw77IcCZBA1GeSNld542SNzzpqZUxHrFkqr9oK8nZUzq7kGw97gpJdHuTjXeARCQ==</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-2e5975d2-plain",
+      "query_params": "?uploadId=wPk8w03bG.A1Y7ziAIoZqfAp5c_ncjbjk1JTwn3VSJyze3CI5Uyy0B13ojAn3zIStxNGqO9BMrH9lo7iqoxP91xvKeXKYmXtceqBefYnDkeH.wCR8pUhjsS6dZXBYdb1&partNumber=8",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-8f7065ef",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-copy-source-server-side-encryption-customer-key": "MTIzNDU2Nzg5MA==",
+        "x-amz-copy-source-server-side-encryption-customer-key-MD5": "6Afx/PgtEy+bsBjKZzihnw==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195608Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

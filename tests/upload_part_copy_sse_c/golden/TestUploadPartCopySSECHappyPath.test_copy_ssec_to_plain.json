@@ -1,0 +1,34 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-copy-source-version-id": "DzK2Py._K7G9gDx7n1ccIN3FC_Rkk_FD",
+        "Content-Type": "application/xml",
+        "Content-Length": "220"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CopyPartResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><LastModified>2026-03-16T19:55:36.000Z</LastModified><ETag>\"eaa14edb21e6dca57d496a34d3217157\"</ETag></CopyPartResult>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-353787c6-plain",
+      "query_params": "?uploadId=71HBdbep_f2HVwrsCLMTww.sitF7NoZnuwmyzpabha_xefCsV.DUJoVDDp8DrQh1egLh8MmpGF.SOnjKSYHCRvp.jGqjH1Gsg7Uq_c3b.aygQGUppLt4uaY40a83avf1&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-6cd08f5d",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-copy-source-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-copy-source-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195534Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

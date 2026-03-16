@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>The calculated MD5 hash of the key did not match the hash that was provided.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>C8N76G2G1VY1R2M1</RequestId><HostId>L48XX7x86WgZMYQj2UcL29gX4uFfC8tyJJlKylhcfMnQK6NTuOmePjxgBEOSjdB9btJwlhAYa+ELZQOdsR6MT8s+8s7kTMD/</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-2e5975d2-plain",
+      "query_params": "?uploadId=wPk8w03bG.A1Y7ziAIoZqfAp5c_ncjbjk1JTwn3VSJyze3CI5Uyy0B13ojAn3zIStxNGqO9BMrH9lo7iqoxP91xvKeXKYmXtceqBefYnDkeH.wCR8pUhjsS6dZXBYdb1&partNumber=10",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-8f7065ef",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-copy-source-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-copy-source-server-side-encryption-customer-key-MD5": "not-valid-base64!!!",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195610Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]
