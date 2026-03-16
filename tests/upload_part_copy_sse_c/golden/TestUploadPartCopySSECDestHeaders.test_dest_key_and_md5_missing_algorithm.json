@@ -1,0 +1,32 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide a valid encryption algorithm.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>EA045HYYMM93PJA8</RequestId><HostId>BeEC7cc0a8aRwn5VAfV4j06XgviJ7Vc4nOdvJ9uK3s0dUlTS10L8Plj+HuWRgMF1X/VNrupmY2M=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-2e5975d2-ssec",
+      "query_params": "?uploadId=vcQqFMKCiN2BKVXx4W_6XnjkjltE.sw2sllCoBE5caZhTG.q6_HQNq9rVZkjRrYZdic8.x.cROCqFNIy_nN9DrQpQ_aODsRiPOgqD42Q71CtnQSgEdcBD2mOi6si7cOW&partNumber=6",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-src-4425b049",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195557Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide an appropriate secret key.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>XGVBKPWAJAEB75V6</RequestId><HostId>+XE3OFCFlw4RONeFZH0Hv5/9L0d03iIhE9X9Nc9SCK7HCNZnHT9UB3LKgbtIdPirAfXXrFiJrGI=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-2e5975d2-plain",
+      "query_params": "?uploadId=wPk8w03bG.A1Y7ziAIoZqfAp5c_ncjbjk1JTwn3VSJyze3CI5Uyy0B13ojAn3zIStxNGqO9BMrH9lo7iqoxP91xvKeXKYmXtceqBefYnDkeH.wCR8pUhjsS6dZXBYdb1&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-8f7065ef",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195603Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

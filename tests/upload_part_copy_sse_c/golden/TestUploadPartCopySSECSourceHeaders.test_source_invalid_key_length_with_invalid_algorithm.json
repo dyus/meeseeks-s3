@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidEncryptionAlgorithmError</Code><Message>The Encryption request you specified is not valid. Supported value: AES256.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue>INVALID-ALGO</ArgumentValue><RequestId>FMFMDJA6NZE978QT</RequestId><HostId>NL9Ci0DFTKtgG61VxCKPgVSa6MNaZY/n58PmRnIZN+vjXuO7Hg9o+VOph//ddBOsXDH9Msw6+LI=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-upc-ssec-mpu-2e5975d2-plain",
+      "query_params": "?uploadId=wPk8w03bG.A1Y7ziAIoZqfAp5c_ncjbjk1JTwn3VSJyze3CI5Uyy0B13ojAn3zIStxNGqO9BMrH9lo7iqoxP91xvKeXKYmXtceqBefYnDkeH.wCR8pUhjsS6dZXBYdb1&partNumber=13",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-upc-ssec-enc-src-8f7065ef",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "INVALID-ALGO",
+        "x-amz-copy-source-server-side-encryption-customer-key": "MTIzNDU2Nzg5MA==",
+        "x-amz-copy-source-server-side-encryption-customer-key-MD5": "6Afx/PgtEy+bsBjKZzihnw==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260316T195612Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]
