@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide a valid encryption algorithm.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>V9SF67A3YC0XQJJ0</RequestId><HostId>m4Pn1v09yKmyh/0gqmMQi1BbBvDqjhzSR9MW95hbXcC+3ij3xN9s8Y7VMWlfyWkRtA/Hve3UU4gi22XuaEDfU3fR7ByS4pGx</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-mpu-ea51d7ca",
+      "query_params": "?uploads",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142420Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>The calculated MD5 hash of the key did not match the hash that was provided.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>KA7FACA151A8M6S1</RequestId><HostId>KYXPEx2ChlPZIaP9/RDajpTBr9oMmRc8SVNhW7Vq7s5mrRXC+qfwpozfBjjCnVIDU2DGtYqKiGIYwj4QWTSgzKMHvSvuXegI</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-22e46508",
+      "query_params": "?uploadId=py_yWnP2ywkUO2stgpzV8ttmt_06C3Zt0gfSigTh.spVbHpemmvL6YdRBSsiiHLBaNPLR8c.XSNTiXbbbYuvtgY4eG_5NpJmqH6O9bjCDZfInHU8yxrm9Nu8GVYqYl9p",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0-_yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142528Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"ea354ef318ed24b75917ed28c1f90be8\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

@@ -85,18 +85,28 @@ class TestSSECMultipartUploadHappyPath:
             # Custom
             factory = S3ClientFactory()
             custom_client = factory.create_client("custom")
+
+            def _add_forwarded_proto(params, **kwargs):
+                params["headers"]["X-Forwarded-Proto"] = "https"
+
+            custom_client.meta.events.register("before-call.s3.CreateMultipartUpload", _add_forwarded_proto)
             custom_mpu = custom_client.create_multipart_upload(
                 Bucket=test_bucket, Key=test_key, **ssec_params,
             )
+            custom_client.meta.events.unregister("before-call.s3.CreateMultipartUpload", _add_forwarded_proto)
             custom_upload_id = custom_mpu["UploadId"]
+            custom_client.meta.events.register("before-call.s3.UploadPart", _add_forwarded_proto)
             custom_parts = _upload_two_parts(
                 custom_client, test_bucket, test_key, custom_upload_id, ssec_params,
             )
+            custom_client.meta.events.unregister("before-call.s3.UploadPart", _add_forwarded_proto)
+            custom_client.meta.events.register("before-call.s3.CompleteMultipartUpload", _add_forwarded_proto)
             custom_client.complete_multipart_upload(
                 Bucket=test_bucket, Key=test_key,
                 UploadId=custom_upload_id,
                 MultipartUpload={"Parts": custom_parts},
             )
+            custom_client.meta.events.unregister("before-call.s3.CompleteMultipartUpload", _add_forwarded_proto)
 
             yield {"key_b64": key_b64, "key_md5": key_md5}
 
@@ -106,18 +116,38 @@ class TestSSECMultipartUploadHappyPath:
                 except Exception:
                     pass
         else:
+            endpoint_is_custom = endpoint_mode == "custom"
+            if endpoint_is_custom:
+                def _add_forwarded_proto(params, **kwargs):
+                    params["headers"]["X-Forwarded-Proto"] = "https"
+
+                s3_client.meta.events.register("before-call.s3.CreateMultipartUpload", _add_forwarded_proto)
+
             mpu = s3_client.create_multipart_upload(
                 Bucket=test_bucket, Key=test_key, **ssec_params,
             )
             upload_id = mpu["UploadId"]
+
+            if endpoint_is_custom:
+                s3_client.meta.events.unregister("before-call.s3.CreateMultipartUpload", _add_forwarded_proto)
+                s3_client.meta.events.register("before-call.s3.UploadPart", _add_forwarded_proto)
+
             parts = _upload_two_parts(
                 s3_client, test_bucket, test_key, upload_id, ssec_params,
             )
+
+            if endpoint_is_custom:
+                s3_client.meta.events.unregister("before-call.s3.UploadPart", _add_forwarded_proto)
+                s3_client.meta.events.register("before-call.s3.CompleteMultipartUpload", _add_forwarded_proto)
+
             s3_client.complete_multipart_upload(
                 Bucket=test_bucket, Key=test_key,
                 UploadId=upload_id,
                 MultipartUpload={"Parts": parts},
             )
+
+            if endpoint_is_custom:
+                s3_client.meta.events.unregister("before-call.s3.CompleteMultipartUpload", _add_forwarded_proto)
 
             yield {"key_b64": key_b64, "key_md5": key_md5}
 

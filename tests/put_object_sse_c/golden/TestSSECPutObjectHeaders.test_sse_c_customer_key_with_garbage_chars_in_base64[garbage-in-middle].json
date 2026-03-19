@@ -1,0 +1,37 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "Jly5Tbx5eBY2G.6P7rBYUAJ0mSqWfW8A",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "ETag": "\"aa7b6eb9c8f64bfdc3f9953e57200c44\"",
+        "x-amz-checksum-crc64nvme": "CvxrR7R1H4I=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-220fe728",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqh!!!!#fJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "38",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142507Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test content for SSE-C encryption test"
+    }
+  }
+]

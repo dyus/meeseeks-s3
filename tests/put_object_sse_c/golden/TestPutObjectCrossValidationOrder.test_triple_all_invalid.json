@@ -1,0 +1,35 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidStorageClass</Code><Message>The storage class you specified is not valid</Message><StorageClassRequested>INVALID_STORAGE_CLASS</StorageClassRequested><RequestId>WVD2SQZQ4K74H4SG</RequestId><HostId>8vmjojd0kWYSbugrhH2mEk1nkPmcT0fufTsTApNfbcBx8cOkiz7KE82Z9yy38Ans1zgxI59aJnQ=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-validation-order-a064196e",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "Content-MD5": "dGhpcyBpcyB3cm9uZw==",
+        "x-amz-storage-class": "INVALID_STORAGE_CLASS",
+        "x-amz-server-side-encryption-customer-algorithm": "AES128-INVALID",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "29",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142416Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "validation order test content"
+    }
+  }
+]

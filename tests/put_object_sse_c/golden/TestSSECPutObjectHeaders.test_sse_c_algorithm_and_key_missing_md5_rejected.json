@@ -1,0 +1,32 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide the client calculated MD5 of the secret key.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>JNX0QQEDSCXHGRKZ</RequestId><HostId>154SVRU+BE3jeDa5vqd5eoeXDBVIxMclG6xvbiTBB4xAv9qyPPgIcjpMv+T7b8Dvmzpiey4yzII=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-6f1a5f53",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "Content-Length": "38",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142439Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test content for SSE-C encryption test"
+    }
+  }
+]

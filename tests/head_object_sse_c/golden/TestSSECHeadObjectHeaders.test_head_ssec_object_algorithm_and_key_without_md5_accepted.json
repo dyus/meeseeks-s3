@@ -1,0 +1,36 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Last-Modified": "Fri, 13 Mar 2026 14:27:55 GMT",
+        "ETag": "\"6f527f73e3f2e8267ad4c0bd88d09dc3\"",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "x-amz-version-id": "FqOXFFJY72DwIwtZlmpx_xiv4MLQVt_Z",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "binary/octet-stream",
+        "Content-Length": "30"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "HEAD",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-head-53b67ca0",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142758Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

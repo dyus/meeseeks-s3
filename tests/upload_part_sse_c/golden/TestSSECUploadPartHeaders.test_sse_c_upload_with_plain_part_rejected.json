@@ -1,0 +1,30 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidRequest</Code><Message>The multipart upload initiate requested encryption. Subsequent part requests must include the appropriate encryption parameters.</Message><RequestId>0CKK7Q45G6NT7TTV</RequestId><HostId>CgloEOUF6KEgKXnF4wTz8PVPvIVs/qfdGgNykjt6jNE2Q434wDXx9zvXWxgd/pooDf+umr4XIB/mQhqC0dXvXES39e09AN5u</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-upload-part-847763a4",
+      "query_params": "?uploadId=vPSNyK4rC09jefFOpgsfFJntU9UYALFC48HWPpu7YwvEv93A9lnhVW9s0p.1svG23KINZJnnrk6Nz2goczF9k9pppITDi_JmRfVopOh.ek2MkpjkWMtCm7NUVNbsvyxN&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142432Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C upload part test"
+    }
+  }
+]

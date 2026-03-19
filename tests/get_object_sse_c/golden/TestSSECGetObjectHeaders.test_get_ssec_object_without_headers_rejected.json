@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidRequest</Code><Message>The object was stored using a form of Server Side Encryption. The correct parameters must be provided to retrieve the object.</Message><RequestId>V1RG9B7PQ4AN5NF6</RequestId><HostId>D4MStBrb9WuP8xJ7mKiT6c/6GaDp0HYp3ymLly9lphuoplMENfAskzkwnZsQ6MJjhko5iCn/kMxDDDVmz9jOPaGY5VEbiixJ</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-get-e4436f35",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142414Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

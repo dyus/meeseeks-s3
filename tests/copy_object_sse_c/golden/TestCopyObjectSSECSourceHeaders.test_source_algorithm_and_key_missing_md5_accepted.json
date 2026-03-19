@@ -1,0 +1,34 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-copy-source-version-id": "b6ls5U2tTFSpYiLY.3j_7OMoV3h82AKu",
+        "x-amz-version-id": "TfZ69190806KvgCJgLoJeau4JJg0Xes.",
+        "x-amz-server-side-encryption": "AES256",
+        "Content-Type": "application/xml",
+        "Content-Length": "303"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<CopyObjectResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><LastModified>2026-03-15T13:24:22.000Z</LastModified><ETag>\"94e80bbeb467f437a0dcb7e6d73ca643\"</ETag><ChecksumCRC32>8JHFrA==</ChecksumCRC32><ChecksumType>FULL_OBJECT</ChecksumType></CopyObjectResult>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-copy-hdr-dst-2c7f04a0-src-c93a",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-copy-hdr-ssec-5bb228b4",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-copy-source-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260315T132421Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

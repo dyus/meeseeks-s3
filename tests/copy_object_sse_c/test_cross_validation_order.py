@@ -66,10 +66,15 @@ def ssec_source(request, aws_client, test_bucket, setup_test_bucket, ssec_source
     if os.getenv("S3_ENDPOINT") and endpoint_mode in ("custom", "both"):
         custom_cl = S3ClientFactory().create_client("custom")
 
+    def _add_forwarded_proto(params, **kwargs):
+        params["headers"]["X-Forwarded-Proto"] = "https"
+
     if endpoint_mode in ("aws", "both"):
         aws_client.put_object(**sse_kwargs)
     if custom_cl:
+        custom_cl.meta.events.register("before-call.s3.PutObject", _add_forwarded_proto)
         custom_cl.put_object(**sse_kwargs)
+        custom_cl.meta.events.unregister("before-call.s3.PutObject", _add_forwarded_proto)
 
     yield ssec_source_key
 

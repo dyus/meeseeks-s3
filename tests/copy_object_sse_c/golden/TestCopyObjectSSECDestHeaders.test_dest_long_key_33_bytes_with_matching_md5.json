@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>The secret key was invalid for the specified algorithm.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>1DVS0RDC8HE5961J</RequestId><HostId>VULmik7im1dQ1zgQSbLMC1pmhLWVO+ki5mT50b5MAfDNpP6dinsaDtd9d2jdheDZ2iiz8lIfHUc=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-copy-hdr-dst-2c7f04a0-dest-f916",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-copy-hdr-plain-d787411e",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB",
+        "x-amz-server-side-encryption-customer-key-MD5": "10M1HRgcfQrBzATB0HsDzg==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260315T132408Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

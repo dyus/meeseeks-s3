@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide a valid encryption algorithm.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>P24SJXFJK71TNYKQ</RequestId><HostId>aEqY6jCwiI6xMKg2msgAbEIynuBbzm+6n5RFg5iTr1mO8SVLjEozKMWB4OaRx0Nb/dqt1Kyueo0=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-empty-upload-part-c246af65",
+      "query_params": "?uploadId=bITMtQLeITb4k79oRkMoczzTYn9485kZo6k1B2O.HhaiMqWR3h4BBW94T_sN78Gs3LfNpU7NBPhG7ERBs7i279Xko02H8IjQNF4FUwCGgxXc6i2Pk63mAG8vGZ2HNnFv&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "x-amz-server-side-encryption-customer-key": "",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142422Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C empty value test"
+    }
+  }
+]

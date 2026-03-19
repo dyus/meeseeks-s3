@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>The calculated MD5 hash of the key did not match the hash that was provided.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>471D2XB1FEX6ZSW2</RequestId><HostId>a5kleFYz4rcov0zo7Yz4YE6een6gWLGXsrn2Ez8VdZDNfgn/aW3eZ9rx3iYPQrTMMEUli5Qsz4HRVk5rU77+9WRYoIIvVEEj</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-2f323689",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "AQEBAQEBAQE=",
+        "Content-Length": "38",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142530Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test content for SSE-C encryption test"
+    }
+  }
+]

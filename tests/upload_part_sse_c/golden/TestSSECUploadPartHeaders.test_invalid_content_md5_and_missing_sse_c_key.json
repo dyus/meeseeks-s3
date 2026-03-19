@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidDigest</Code><Message>The Content-MD5 you specified was invalid.</Message><Content-MD5>dGhpcyBpcyB3cm9uZw==</Content-MD5><RequestId>8S202B117QBZC5P5</RequestId><HostId>Nc1ou4hOueG4S+aevNjYUARcK4CWCW80W2jJ3/t4lFqy08TMlfeqmqhYgeqRtT4O2RDL7jEPlB16qiwlGL2ew6rxKi14U+Ge</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-upload-part-2d3f3876",
+      "query_params": "?uploadId=05yp0kOKL11UnH_RAy.JUBtFjleGkJf0MyBFiFibAh4QzuK3E55l8NYh4hqM9xEnpeX.zmCCQjBa2Cay9mFhkMExjS58oVd8hBfd8ZWFbvTHnbjbN01iwD1._d2OlBqp&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "Content-MD5": "dGhpcyBpcyB3cm9uZw==",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142502Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C upload part test"
+    }
+  }
+]

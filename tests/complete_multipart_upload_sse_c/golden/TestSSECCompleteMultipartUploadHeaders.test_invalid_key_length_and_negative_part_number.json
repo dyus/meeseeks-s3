@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>PartNumber must be &gt;= 1</Message><ArgumentName>PartNumber</ArgumentName><ArgumentValue>-1</ArgumentValue><RequestId>TH7NC061KBGC71K5</RequestId><HostId>aooxoE87LaI2ZK8lALzm/XfZ9Ndeu1Vq5d6ayTjZF4JLFZWjQ5qYQtGadbSnxmV9bU9ic9ZlKYb8EPtA/NnW9wVm5PJnghaB</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-cb21d21d",
+      "query_params": "?uploadId=c2S_NhAtTgdIVWYT1_5FXPFn3rEOn_98auc0eDkzumwz.sCgs99uLDWw2AAf0K9n2O40Sqd9ElgvG7XmtxazK8tKUviswG5Sph._6x8OX6UhkpRyAnvbiH9ikjXlbc6D",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "MTIzNDU2Nzg5MA==",
+        "x-amz-server-side-encryption-customer-key-MD5": "6Afx/PgtEy+bsBjKZzihnw==",
+        "Content-Length": "144",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142508Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>-1</PartNumber>\n        <ETag>\"fake-etag\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

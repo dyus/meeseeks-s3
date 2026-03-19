@@ -1,0 +1,35 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "J6ReHC862arpNxjs31z54qIEipoGgzfm",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<CompleteMultipartUploadResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Location>https://s3.amazonaws.com/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-8518590d</Location><Bucket>anon-reverse-s3-test-bucket</Bucket><Key>test-ssec-complete-mpu-8518590d</Key><ETag>\"995ddf8bd519046c0a551b8bb476fe17-1\"</ETag><ChecksumCRC64NVME>Qeh8oXvGiSo=</ChecksumCRC64NVME><ChecksumType>FULL_OBJECT</ChecksumType></CompleteMultipartUploadResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-8518590d",
+      "query_params": "?uploadId=eqA6pgNCmpfgHPrZ1QfTuXkbZgZBQ17GbTBYs528zY3S483q5i9neQhAh625gu_M_C.0MnhpHj4IRPlIfHGr62V0fJtB0CHYEnwfEH9hjDhtk_JdA_2tW0lTzzvI6HYe",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqh!!!!#fJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142535Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"5afd71016915369b3a53649563bed1ef\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

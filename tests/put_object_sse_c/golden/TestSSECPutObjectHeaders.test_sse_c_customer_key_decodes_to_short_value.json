@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>The secret key was invalid - too short.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue>####</ArgumentValue><RequestId>DTS7M5Q203WM6J24</RequestId><HostId>Js9naOtiF5ANWjoyCjE25xj6rpYl3Y+Yb8MnQEmd+Z9bfTx9KkynBlUSYCT3cS3RO1raroNj+UE0KiU8x68GSaiAM8Gf7OhZ</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-c4a20f6f",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "####",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "38",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142458Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test content for SSE-C encryption test"
+    }
+  }
+]

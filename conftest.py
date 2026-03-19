@@ -68,6 +68,24 @@ def pytest_addoption(parser):
         default=False,
         help="Show HTTP request/response details for each test",
     )
+    parser.addoption(
+        "--record-golden",
+        action="store_true",
+        default=False,
+        help="Record AWS responses to golden files (implies live AWS calls)",
+    )
+    parser.addoption(
+        "--no-golden",
+        action="store_true",
+        default=False,
+        help="Force live AWS calls even if golden files exist",
+    )
+    parser.addoption(
+        "--custom-http",
+        action="store_true",
+        default=False,
+        help="Do not add X-Forwarded-Proto: https to custom endpoint requests",
+    )
 
 
 def pytest_configure(config):

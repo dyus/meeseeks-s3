@@ -19,6 +19,11 @@ from s3_compliance.http_capture import (
     HTTPCapture, TestHTTPData, SetupStep,
     http_captures_key, setup_steps_key,
 )
+from s3_compliance.golden import (
+    golden_file_path,
+    GoldenRecorder,
+    GoldenPlayer,
+)
 
 
 def ensure_bucket_exists(s3_client, bucket_name, region="us-east-1"):
@@ -135,6 +140,14 @@ def setup_steps(request):
         ))
 
     return _record
+
+
+@pytest.fixture
+def golden_mode(request):
+    """Returns True if golden replay is active (not recording, golden files exist)."""
+    record = request.config.getoption("--record-golden")
+    no_golden = request.config.getoption("--no-golden")
+    return not record and not no_golden
 
 
 @pytest.fixture
@@ -545,6 +558,11 @@ def make_request(
     In comparison mode (--endpoint=both):
         Returns ComparisonResponse with both responses and comparison.
 
+    Golden file modes:
+        --record-golden: Live AWS call + save response to golden file
+        (default): Replay from golden file if it exists, live call if not
+        --no-golden: Force live AWS calls, ignore golden files
+
     Also captures HTTP details for markdown reporting via --md-report.
 
     Usage:
@@ -561,6 +579,25 @@ def make_request(
     """
     endpoint_mode = request.config.getoption("--endpoint")
     test_name = request.node.name
+    record_golden = request.config.getoption("--record-golden")
+    no_golden = request.config.getoption("--no-golden")
+
+    # Golden file setup
+    # - --record-golden: always record (overwrite existing golden files)
+    # - --no-golden: never use golden files, always live
+    # - default: replay if golden file exists, auto-record on miss
+    golden_path = golden_file_path(request.node.nodeid)
+    use_golden = endpoint_mode in ("aws", "both") and not no_golden
+    golden_recorder = None
+    golden_player = None
+    if use_golden:
+        if record_golden:
+            golden_recorder = GoldenRecorder(golden_path)
+        elif golden_path.exists():
+            golden_player = GoldenPlayer(golden_path)
+        else:
+            # Auto-record: no golden file yet, create one from live call
+            golden_recorder = GoldenRecorder(golden_path)
 
     # Initialize captures list in stash
     request.node.stash[http_captures_key] = []
@@ -569,7 +606,7 @@ def make_request(
         method: str,
         url: str,
         req_body: bytes,
-        response: requests.Response,
+        response,
         endpoint_name: str = "",
     ) -> HTTPCapture:
         """Create HTTPCapture from request/response.
@@ -577,8 +614,12 @@ def make_request(
         Uses response.request.headers to capture the actual signed headers
         that were sent over the wire (including Content-Length,
         x-amz-content-sha256, Authorization, etc.).
+
+        For GoldenResponse (no .request attribute), request_headers will be empty.
         """
-        actual_headers = dict(response.request.headers) if response.request else {}
+        actual_headers = {}
+        if hasattr(response, "request") and response.request is not None:
+            actual_headers = dict(response.request.headers)
         return HTTPCapture(
             method=method,
             url=url,
@@ -598,6 +639,7 @@ def make_request(
         query_params: str = "",
         custom_body: bytes = None,
         custom_query_params: str = None,
+        scheme: str = None,
     ) -> Union[requests.Response, ComparisonResponse]:
         """Make a signed request to S3.
 
@@ -609,44 +651,85 @@ def make_request(
             query_params: Query string (e.g., "?delete")
             custom_body: Separate body for custom endpoint in 'both' mode (falls back to body)
             custom_query_params: Separate query params for custom endpoint in 'both' mode (falls back to query_params)
+            scheme: Override URL scheme (e.g., "http" to force plain HTTP)
 
         Returns:
             requests.Response in single mode, ComparisonResponse in both mode
         """
         req_headers = dict(headers) if headers else {}
 
+        # Add X-Forwarded-Proto: https to custom endpoint requests by default
+        # (custom endpoint runs over HTTP, but Go server checks scheme for SSE-C).
+        # Use --custom-http to disable this behavior.
+        # Skipped when scheme="http" is explicitly passed (test wants plain HTTP).
+        forward_proto = not request.config.getoption("--custom-http")
+
+        def _inject_forwarded_proto(hdrs):
+            """Add X-Forwarded-Proto: https if enabled and scheme not overridden to http."""
+            if not forward_proto or scheme == "http":
+                return hdrs
+            if hdrs is not None:
+                hdrs.setdefault("X-Forwarded-Proto", "https")
+            else:
+                hdrs = {"X-Forwarded-Proto": "https"}
+            return hdrs
+
+        def _apply_scheme(url):
+            """Override URL scheme if requested."""
+            if scheme and url:
+                import re
+                return re.sub(r'^https?://', f'{scheme}://', url)
+            return url
+
         if endpoint_mode == "both":
             # Resolve per-endpoint body and query params
             actual_custom_body = custom_body if custom_body is not None else body
             actual_custom_query_params = custom_query_params if custom_query_params is not None else query_params
 
-            # Execute request against both endpoints
-            aws_resp = _do_request(
-                aws_endpoint_url,
-                aws_credentials,
-                aws_region,
-                method,
-                path,
-                body,
-                dict(headers) if headers else None,
-                query_params,
-                verify_ssl=verify_ssl,
-            )
+            # --- AWS side: golden file or live ---
+            if golden_player:
+                # Replay from golden file
+                aws_resp = golden_player.next()
+            else:
+                # Live AWS call
+                aws_resp = _do_request(
+                    _apply_scheme(aws_endpoint_url),
+                    aws_credentials,
+                    aws_region,
+                    method,
+                    path,
+                    body,
+                    dict(headers) if headers else None,
+                    query_params,
+                    verify_ssl=verify_ssl,
+                )
+                if golden_recorder:
+                    request_info = {
+                        "method": method,
+                        "path": path,
+                        "query_params": query_params or "",
+                        "headers": dict(aws_resp.request.headers),
+                        "body": body,
+                    }
+                    golden_recorder.record(_response_to_dict(aws_resp), request_info=request_info)
+
+            # Custom always goes live
+            custom_headers = _inject_forwarded_proto(dict(headers) if headers else None)
             custom_resp = _do_request(
-                custom_endpoint_url,
+                _apply_scheme(custom_endpoint_url),
                 custom_credentials,
                 custom_region,
                 method,
                 path,
                 actual_custom_body,
-                dict(headers) if headers else None,
+                custom_headers,
                 actual_custom_query_params,
                 verify_ssl=verify_ssl,
             )
 
             # Capture HTTP details for reporting
-            aws_url = f"{aws_endpoint_url}{path}{query_params}"
-            custom_url = f"{custom_endpoint_url}{path}{actual_custom_query_params}"
+            aws_url = f"{_apply_scheme(aws_endpoint_url)}{path}{query_params}"
+            custom_url = f"{_apply_scheme(custom_endpoint_url)}{path}{actual_custom_query_params}"
             aws_capture = _capture_http(method, aws_url, body, aws_resp, "aws")
             custom_capture = _capture_http(method, custom_url, actual_custom_body, custom_resp, "custom")
 
@@ -670,19 +753,24 @@ def make_request(
             # Show detailed comparison if requested
             show_comparison = request.config.getoption("--show-comparison")
             if show_comparison:
+                golden_label = " [GOLDEN]" if golden_player else ""
                 print("\n" + "=" * 70)
-                print(f"COMPARISON: {method} {path}{query_params}")
+                print(f"COMPARISON: {method} {path}{query_params}{golden_label}")
                 print("=" * 70)
                 print("\n--- AWS Request ---")
                 print(f"URL: {aws_endpoint_url}{path}{query_params}")
-                print(f"Headers sent: {headers}")
-                print("\n--- AWS Response ---")
+                print(f"Headers:")
+                for k, v in aws_capture.request_headers.items():
+                    print(f"  {k}: {v}")
+                print(f"\n--- AWS Response{golden_label} ---")
                 print(f"Status: {aws_resp.status_code}")
                 print(f"Headers: {dict(aws_resp.headers)}")
                 print(f"Body: {aws_resp.text[:500]}{'...' if len(aws_resp.text) > 500 else ''}")
                 print("\n--- Custom Request ---")
-                print(f"URL: {custom_endpoint_url}{path}{query_params}")
-                print(f"Headers sent: {headers}")
+                print(f"URL: {custom_endpoint_url}{path}{actual_custom_query_params}")
+                print(f"Headers:")
+                for k, v in custom_capture.request_headers.items():
+                    print(f"  {k}: {v}")
                 print("\n--- Custom Response ---")
                 print(f"Status: {custom_resp.status_code}")
                 print(f"Headers: {dict(custom_resp.headers)}")
@@ -700,22 +788,76 @@ def make_request(
                 custom=custom_resp,
                 comparison=comparison,
             )
+
+        elif endpoint_mode == "aws" and golden_player:
+            # Single AWS mode with golden replay
+            aws_resp = golden_player.next()
+
+            url = f"{endpoint_url}{path}{query_params}"
+            capture = _capture_http(method, url, body, aws_resp, "aws")
+            request.node.stash[http_captures_key].append({"single": capture})
+
+            show_http = request.config.getoption("--show-http")
+            if show_http:
+                print("\n" + "=" * 70)
+                print(f"HTTP [GOLDEN]: {method} {path}{query_params}")
+                print("=" * 70)
+                # Show request info from golden file if available
+                if aws_resp._request_data:
+                    req = aws_resp._request_data
+                    print(f"\n--- REQUEST (from golden file) ---")
+                    print(f"URL: {req.get('path', '')}{req.get('query_params', '')}")
+                    print(f"Headers:")
+                    for k, v in req.get("headers", {}).items():
+                        print(f"  {k}: {v}")
+                    req_body = req.get("body", "")
+                    if req_body:
+                        print(f"\nBody ({len(req_body)} chars):")
+                        print(req_body[:2000])
+                    else:
+                        print("\nBody: (empty)")
+                print(f"\n--- RESPONSE (from golden file) ---")
+                print(f"Status: {aws_resp.status_code}")
+                print(f"Headers:")
+                for k, v in aws_resp.headers.items():
+                    print(f"  {k}: {v}")
+                if aws_resp.text:
+                    print(f"\nBody ({len(aws_resp.text)} chars):")
+                    print(aws_resp.text[:2000])
+                print("=" * 70 + "\n")
+
+            return aws_resp
+
         else:
-            # Single endpoint mode - use current endpoint
+            # Single endpoint mode - use current endpoint (live call)
+            single_headers = dict(headers) if headers else None
+            if endpoint_mode == "custom":
+                single_headers = _inject_forwarded_proto(single_headers)
             response = _do_request(
-                endpoint_url,
+                _apply_scheme(endpoint_url),
                 credentials,
                 region,
                 method,
                 path,
                 body,
-                dict(headers) if headers else None,
+                single_headers,
                 query_params,
                 verify_ssl=verify_ssl,
             )
 
+            # Record if in aws mode and recording
+            if endpoint_mode == "aws" and golden_recorder:
+                request_info = {
+                    "method": method,
+                    "path": path,
+                    "query_params": query_params or "",
+                    "headers": dict(response.request.headers),
+                    "body": body,
+                }
+                golden_recorder.record(_response_to_dict(response), request_info=request_info)
+
             # Capture HTTP details for reporting
-            url = f"{endpoint_url}{path}{query_params}"
+            url = f"{_apply_scheme(endpoint_url)}{path}{query_params}"
             capture = _capture_http(method, url, body, response, endpoint_mode)
             request.node.stash[http_captures_key].append({"single": capture})
 
@@ -756,5 +898,12 @@ def make_request(
                 print("=" * 70 + "\n")
 
             return response
+
+    def _finalize():
+        """Save golden recordings on test teardown."""
+        if golden_recorder:
+            golden_recorder.finalize()
+
+    request.addfinalizer(_finalize)
 
     return _make

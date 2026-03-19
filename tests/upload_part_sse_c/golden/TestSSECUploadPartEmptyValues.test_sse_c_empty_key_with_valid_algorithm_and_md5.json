@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>The secret key was invalid - too short.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue></ArgumentValue><RequestId>SBJEW3AX0GKKA2FS</RequestId><HostId>9XhipEs9vZ2kS0kd60uHkHMsLxHw6Gx09JI3wJHnrJDknlPW9blvNKEAMawcS6BkGdtyw+wztiyez6JN2UkYVfQI+4AqKbW5zoOEVfQBtzQ=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-empty-upload-part-d28995fd",
+      "query_params": "?uploadId=LZ1BrUSTqHVJvLlUIHSkdtF1thB2.hypzPiEFxFKH_qMlELOLfg6Ej64GeV4P9Tn.m7z8uCYneV93IgHM2ZH8kYUZv2LUNbDXH57vs.VW4d8aX8xMEQUNTPpfQIA9_1M&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142415Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C empty value test"
+    }
+  }
+]

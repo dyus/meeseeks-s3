@@ -1,0 +1,34 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidEncryptionAlgorithmError</Code><Message>The Encryption request you specified is not valid. Supported value: AES256.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue>SRC-INVALID</ArgumentValue><RequestId>AR2FZJH4X7ZDDXCP</RequestId><HostId>xd59xukrJptv/y2mLkkUMf0zdJfqv8/dXKHBKcZPBeVNAAW0VePnsa3uBvRHHo5aG6zel004rQRQtTDE2rUVT7vx2P4Tjwsu3sxxrfhb6Ps=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-copy-xval-dst-586ad982-xval-2d3f",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-copy-source": "/anon-reverse-s3-test-bucket/test-copy-xval-src-c47fc850",
+        "x-amz-copy-source-server-side-encryption-customer-algorithm": "SRC-INVALID",
+        "x-amz-copy-source-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-copy-source-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260315T132324Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

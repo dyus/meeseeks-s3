@@ -1,0 +1,35 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidDigest</Code><Message>The Content-MD5 you specified was invalid.</Message><Content-MD5>dGhpcyBpcyB3cm9uZw==</Content-MD5><RequestId>E84H2XEJWFDZCM9C</RequestId><HostId>tj4kRB9Fmg4YqBFXn3dB5cJd9HUuT368F0lKSjQN1EdEDt99xT+EySeAiooBltMhjmbWwbH7umMO8CVAwHFf3p4asESTfh/k</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-validation-order-bd9f3449",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "text/plain",
+        "Content-MD5": "dGhpcyBpcyB3cm9uZw==",
+        "x-amz-storage-class": "STANDARD",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "29",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142410Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "validation order test content"
+    }
+  }
+]

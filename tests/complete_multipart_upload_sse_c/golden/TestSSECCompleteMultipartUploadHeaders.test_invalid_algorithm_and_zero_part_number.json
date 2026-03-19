@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>PartNumber must be &gt;= 1</Message><ArgumentName>PartNumber</ArgumentName><ArgumentValue>0</ArgumentValue><RequestId>W9SESN0K4YZQC50A</RequestId><HostId>SDc74BWz3pZq3CDvhRVbIYqRgzds1djlYNHRogOOPoSzmJkFfKuhUYfQp+UhLpEsElISx9PrukM=</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-855e0b67",
+      "query_params": "?uploadId=06lhJz6wwKlYIZHUDIm5C9EdFzco2bgHQgPZGRARaBfZ.jC_cJPreidE7g5p7c4ZP5CBnUGqCOY3kTKXMvsBZGBUgwo3zXHDbmen1u.NPu7bTJtOitEoSZJ4jXMLrgLw",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES128-INVALID",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "143",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142506Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>0</PartNumber>\n        <ETag>\"fake-etag\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "IiM27.VFI.dU1bN_eWg7Mrly457lwwa_",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<CompleteMultipartUploadResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Location>https://s3.amazonaws.com/anon-reverse-s3-test-bucket/test-ssec-empty-complete-f9968b4d</Location><Bucket>anon-reverse-s3-test-bucket</Bucket><Key>test-ssec-empty-complete-f9968b4d</Key><ETag>\"0d696ceea29916a198083b3f928e4234-1\"</ETag></CompleteMultipartUploadResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-empty-complete-f9968b4d",
+      "query_params": "?uploadId=W0_s99MIMflXhlSvx6kx6g4BrzWWZ1JCgJL_zBQMNZ8CDDOOKlDxOlKQk2_I.kiDuC0dEFClcMU95DU3XIZXno.fEoZl1eWdOvPsl2wrwuj7FZtha29WO1C4ByShUsNG",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-key": "",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142425Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"dedc8d7c25b345fa989ff2e58eb93f52\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>The secret key was invalid - too short.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue>ZZ</ArgumentValue><RequestId>7CM9P0KZJ3JHP0MZ</RequestId><HostId>zgiO4jiYBaB/ugPoGEL1Jc6UW5nkXZc4dDttq2PzuJIz8M1xAT+QyF+D7ji4oQzf0Hu9vwdQtMVafu3MCYj6sIVKu7iSj7zG</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-170d30b3",
+      "query_params": "?uploadId=q6GnxsyOvqC1Nylm8jGZP1Rx6_XTcjlIJnlMP_JMbztwwUXSuAYCHfZLP2rua168vscXxCRQpq4HQky.CUKFcVRdo8v.R0Y90.ceS9rAmQAVi8LBF6oaenRGrx7CARxK",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "ZZ",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142541Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"cf70c5bdb355a2968cedd70aa3160069\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

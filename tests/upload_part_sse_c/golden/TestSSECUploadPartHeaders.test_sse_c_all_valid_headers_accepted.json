@@ -1,0 +1,34 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "ETag": "\"769ee8c63cda66ec60a0e7d76cb1efb1\"",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-upload-part-4c310ca7",
+      "query_params": "?uploadId=OyGofTOnbmaCTc0Pl.QxEovZ3VVCLhVW7vpFA6ELp2caJIeszcOCY3MUM8Q2ntTCZqTwg7xtPGW1iG8Yp0h_ZH0U3Xnk2IuN1en6PHp05b2tHeQ5V0S1iXec6sjO8DXc&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142427Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C upload part test"
+    }
+  }
+]

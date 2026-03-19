@@ -1,0 +1,33 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must be made over a secure connection.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>2KS9GBDYF6PCCT0T</RequestId><HostId>T0QDWIRUjdMn09VP5quwSQy1zIxlzxzxtCYqflrAw/goXxC8+Lvh4S3BKuxloxrcXePr1Oi/WAQ=</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-e8cb3e35",
+      "query_params": "?uploadId=ccFVMzslJXAS0izgtYQ9K5T8fllYjgxd7.XlYlyp.YVLIIvhn7P9_UFbdWs3Q6xZsoCB67OpQGZRycXk8P8V_QYzFI31fj7rF8lgSHhcV9WRMInS1qPdlmx5ujjwriTd",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256-INVALID",
+        "x-amz-server-side-encryption-customer-key": "not-valid-base64!!!",
+        "x-amz-server-side-encryption-customer-key-MD5": "K9opmNmw7hl9oUKgRH9nJQ==",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142612Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"3522ce003bb1f46db8f967788e28b985\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

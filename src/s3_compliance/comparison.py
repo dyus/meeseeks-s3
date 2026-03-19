@@ -88,6 +88,7 @@ PRESENCE_ONLY_XML_ELEMENTS = {
     "ETag",
     "LastModified",
     "Location",
+    "Key",
 }
 
 # XML element prefixes that are dynamic and should be ignored

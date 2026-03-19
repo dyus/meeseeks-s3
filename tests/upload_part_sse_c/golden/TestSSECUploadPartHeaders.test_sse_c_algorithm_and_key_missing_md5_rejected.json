@@ -1,0 +1,32 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide the client calculated MD5 of the secret key.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>S0D16DNS8MCRAFEP</RequestId><HostId>cu76EtMZ4JeJHno6oI+7OwW3zUl8yIo+X0Uyg5hxEgFWeRfokDfxfASf85MMdttg7vxML7uJ5mxxjeVk2booIxzuEWxjAyKkPvQfsCqagX8=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-upload-part-c3a43c70",
+      "query_params": "?uploadId=2dBeGPLJFyPzktbSQittuZ3RwFbBu1S9sJZKs9lm5Y64CfvuaBkLoiz3rDixgzKzhfzLWFiB0ulWrErxwegJ1KdHwUaM_5w36OuR9wGS5gyK5vqoAI76_DNluRcSLfrj&partNumber=1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/octet-stream",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "Content-Length": "44",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142442Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "test part content for SSE-C upload part test"
+    }
+  }
+]

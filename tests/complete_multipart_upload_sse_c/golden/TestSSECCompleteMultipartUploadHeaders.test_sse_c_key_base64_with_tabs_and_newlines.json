@@ -1,0 +1,35 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "DRMZDRqC0zA8bPXxNEMD.00kTW_N1vb2",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<CompleteMultipartUploadResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Location>https://s3.amazonaws.com/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-d50b5311</Location><Bucket>anon-reverse-s3-test-bucket</Bucket><Key>test-ssec-complete-mpu-d50b5311</Key><ETag>\"35290f2ee645386e234f5456112f7226-1\"</ETag><ChecksumCRC64NVME>Qeh8oXvGiSo=</ChecksumCRC64NVME><ChecksumType>FULL_OBJECT</ChecksumType></CompleteMultipartUploadResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-complete-mpu-d50b5311",
+      "query_params": "?uploadId=GI2A1bYS__EOiW9mlpOSxRVLzofyPrDHp9LMqRjIbUzXr8qISjHeZFRGAy6tyqfId4rKSEA4QLBPYVo6_Ac4FFkuN02u8zIIIy6iMB5rhTGKnAtbLOWxN7mpA40NEGbk",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJ\tcx5Cgotq\tScZJqhfJ\t8hpfw4le\tiB3Bzyo8\tHSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "Content-Length": "166",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260313T142518Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<CompleteMultipartUpload>\n    <Part>\n        <PartNumber>1</PartNumber>\n        <ETag>\"0f03daeefd31386a38843a467ba831d5\"</ETag>\n    </Part>\n</CompleteMultipartUpload>"
+    }
+  }
+]

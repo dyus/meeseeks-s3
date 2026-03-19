@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 403,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>AccessDenied</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide the correct secret key.</Message><RequestId>E0FB1RQDF1PFE0SX</RequestId><HostId>Jv28lDSv2nhUAKIpJN0ZHtNGWz9snxxcWjKtDXX61Coqnn4SAe1r1Rgitl3tHbup0Sm3ZfZbd6BaEd+icAS1/QTHuPzcl4Az1/L2BtUTmhA=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/test-ssec-get-mpu-2a612f0e",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "qMVGU/WAdLltYhFosMKpY53fyz/AO3hQnLsCdCROsbw=",
+        "x-amz-server-side-encryption-customer-key-MD5": "Epo8rcE4mKWPJrhRKkLKDQ==",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260314T194816Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]
