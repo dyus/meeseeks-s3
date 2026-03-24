@@ -176,10 +176,6 @@ def make_signed_request(endpoint_url, credentials, region, verify_ssl):
         url = f"{endpoint_url}{path}{query_params}"
         headers = headers or {}
 
-        # Add required headers if not present
-        if "Content-Length" not in headers:
-            headers["Content-Length"] = str(len(body))
-
         if "x-amz-content-sha256" not in headers:
             headers["x-amz-content-sha256"] = calculate_content_sha256(body)
 
@@ -349,9 +345,6 @@ def compare_endpoints_fixture(
         """
         headers = headers or {}
 
-        # Add required headers
-        if "Content-Length" not in headers:
-            headers["Content-Length"] = str(len(body))
         if "x-amz-content-sha256" not in headers:
             headers["x-amz-content-sha256"] = calculate_content_sha256(body)
 
@@ -491,9 +484,6 @@ def _do_request(
     url = f"{endpoint_url}{path}{query_params}"
     headers = dict(headers) if headers else {}
 
-    # Add required headers if not present
-    if "Content-Length" not in headers:
-        headers["Content-Length"] = str(len(body))
     if "x-amz-content-sha256" not in headers:
         headers["x-amz-content-sha256"] = calculate_content_sha256(body)
 
