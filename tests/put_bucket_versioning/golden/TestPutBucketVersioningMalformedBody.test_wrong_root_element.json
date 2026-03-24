@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "62",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260319T121004Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\"?><Delete><Status>Enabled</Status></Delete>"
+    }
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 403,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>SignatureDoesNotMatch</Code><Message>The request signature we calculated does not match the signature you provided. Check your key and signing method.</Message><AWSAccessKeyId>AKIARXBT3I5EREDM3BME</AWSAccessKeyId><StringToSign>AWS4-HMAC-SHA256\n20260319T131038Z\n20260319/us-east-1/s3/aws4_request\nfe6b38434fdb89d4b3545d7d175a3e4dfca88724ecfa6b0c9a866b43292de01d</StringToSign><SignatureProvided>05ea1e82fc815a66a4854135dadccee0564b0f02cc71d3840232391e6f049520</SignatureProvided><StringToSignBytes>41 57 53 34 2d 48 4d 41 43 2d 53 48 41 32 35 36 0a 32 30 32 36 30 33 31 39 54 31 33 31 30 33 38 5a 0a 32 30 32 36 30 33 31 39 2f 75 73 2d 65 61 73 74 2d 31 2f 73 33 2f 61 77 73 34 5f 72 65 71 75 65 73 74 0a 66 65 36 62 33 38 34 33 34 66 64 62 38 39 64 34 62 33 35 34 35 64 37 64 31 37 35 61 33 65 34 64 66 63 61 38 38 37 32 34 65 63 66 61 36 62 30 63 39 61 38 36 36 62 34 33 32 39 32 64 65 30 31 64</StringToSignBytes><CanonicalRequest>PUT\n/anon-reverse-s3-test-bucket\nversioning=\ncontent-length:\ncontent-type:application/xml\nhost:s3.amazonaws.com\nx-amz-content-sha256:f5115c63baa9ebcd84bf71fe038173480954d60718e1525aeb756f5657f030cc\nx-amz-date:20260319T131038Z\n\ncontent-length;content-type;host;x-amz-content-sha256;x-amz-date\nf5115c63baa9ebcd84bf71fe038173480954d60718e1525aeb756f5657f030cc</CanonicalRequest><CanonicalRequestBytes>50 55 54 0a 2f 61 6e 6f 6e 2d 72 65 76 65 72 73 65 2d 73 33 2d 74 65 73 74 2d 62 75 63 6b 65 74 0a 76 65 72 73 69 6f 6e 69 6e 67 3d 0a 63 6f 6e 74 65 6e 74 2d 6c 65 6e 67 74 68 3a 0a 63 6f 6e 74 65 6e 74 2d 74 79 70 65 3a 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 6d 6c 0a 68 6f 73 74 3a 73 33 2e 61 6d 61 7a 6f 6e 61 77 73 2e 63 6f 6d 0a 78 2d 61 6d 7a 2d 63 6f 6e 74 65 6e 74 2d 73 68 61 32 35 36 3a 66 35 31 31 35 63 36 33 62 61 61 39 65 62 63 64 38 34 62 66 37 31 66 65 30 33 38 31 37 33 34 38 30 39 35 34 64 36 30 37 31 38 65 31 35 32 35 61 65 62 37 35 36 66 35 36 35 37 66 30 33 30 63 63 0a 78 2d 61 6d 7a 2d 64 61 74 65 3a 32 30 32 36 30 33 31 39 54 31 33 31 30 33 38 5a 0a 0a 63 6f 6e 74 65 6e 74 2d 6c 65 6e 67 74 68 3b 63 6f 6e 74 65 6e 74 2d 74 79 70 65 3b 68 6f 73 74 3b 78 2d 61 6d 7a 2d 63 6f 6e 74 65 6e 74 2d 73 68 61 32 35 36 3b 78 2d 61 6d 7a 2d 64 61 74 65 0a 66 35 31 31 35 63 36 33 62 61 61 39 65 62 63 64 38 34 62 66 37 31 66 65 30 33 38 31 37 33 34 38 30 39 35 34 64 36 30 37 31 38 65 31 35 32 35 61 65 62 37 35 36 66 35 36 35 37 66 30 33 30 63 63</CanonicalRequestBytes><RequestId>MQCK168KC1GMENTC</RequestId><HostId>cNkSrG/WdDiGXgX0J8zaRJxYtAfBvDlsfyHqMkku34Lp4yNqyWrgxvmsp6RmkPRTtqMNJzPU7gE=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Content-Length": "172",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260319T131038Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "a1\r\n<?xml version=\"1.0\" encoding=\"UTF-8\"?><VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status></VersioningConfiguration>\r\n0\r\n\r\n"
+    }
+  }
+]

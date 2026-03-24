@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>RequestTimeout</Code><Message>Your socket connection to the server was not read from or written to within the timeout period. Idle connections will be closed.</Message><RequestId>TBDC8308KESZMWGQ</RequestId><HostId>QoDwfGrBlxPBm7ZmdmXp5pnIoBxJYhY90cV7a5WOqP22+HWJSnH4hH/lsWDactfjxrZFcKjUgpQ7lb62KaYyATw7KqOpL9UU</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260324T191715Z",
+        "Authorization": "[REDACTED]",
+        "Content-Length": "0"
+      },
+      "body": ""
+    }
+  }
+]

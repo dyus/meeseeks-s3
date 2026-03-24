@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 501,
+      "headers": {
+        "Transfer-Encoding": "chunked",
+        "Cache-Control": "no-store",
+        "Connection": "close"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "deflate",
+        "Content-Length": "161",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260319T125146Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status></VersioningConfiguration>"
+    }
+  }
+]
