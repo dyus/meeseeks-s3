@@ -72,7 +72,15 @@ IGNORE_HEADERS = {
     "content-length",  # May vary due to formatting
     "connection",
     "keep-alive",
+    "etag",       # Different per endpoint (different objects)
+    "location",   # Different per endpoint (different domains)
+    "transfer-encoding",  # AWS uses chunked on errors, custom may not
 }
+
+# Header prefixes to ignore in comparison
+IGNORE_HEADER_PREFIXES = (
+    "x-amz-checksum",
+)
 
 # XML elements that are dynamic and should be ignored in comparison
 IGNORE_XML_ELEMENTS = {
@@ -120,6 +128,7 @@ class ComparisonResult:
             self.status_match
             and self.error_code_match
             and not self.body_differences
+            and not self.header_differences
         )
 
     @property
@@ -167,9 +176,11 @@ def extract_error_code(xml_body: str) -> Optional[str]:
 
 
 def filter_headers(headers: dict) -> dict:
-    """Filter out dynamic headers that should be ignored in comparison."""
+    """Filter out dynamic headers and normalize keys to lowercase for comparison."""
     return {
-        k: v for k, v in headers.items() if k.lower() not in IGNORE_HEADERS
+        k.lower(): v for k, v in headers.items()
+        if k.lower() not in IGNORE_HEADERS
+        and not k.lower().startswith(IGNORE_HEADER_PREFIXES)
     }
 
 
