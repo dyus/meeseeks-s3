@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Invalid id</Message><ArgumentName>CanonicalUser/ID</ArgumentName><ArgumentValue>test-owner-id</ArgumentValue><RequestId>AGF9S204B49W2BF8</RequestId><HostId>Ag5F2RWn6J6HxvsdJom0Bf7AbGecnZu5bbAIWOi492Ug49FgaYVYKIWksVVzp2ihJ580CrhCykQ=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?acl",
+      "headers": {
+        "User-Agent": "python-requests/2.32.5",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "DPtaJRxMVytw3onchKZcPg==",
+        "Content-Length": "502",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260320T084650Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<AccessControlPolicy xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\">\n    <Owner>\n        <ID>test-owner-id</ID>\n    </Owner>\n    <AccessControlList>\n        <Grant>\n            <Grantee xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"Group\">\n                <URI>http://acs.amazonaws.com/groups/s3/LogDelivery</URI>\n            </Grantee>\n            <Permission>WRITE</Permission>\n        </Grant>\n    </AccessControlList>\n</AccessControlPolicy>"
+    }
+  }
+]

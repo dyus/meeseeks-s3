@@ -1,0 +1,37 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>The calculated MD5 hash of the key did not match the hash that was provided.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>YZXJFR7VDHFVPMZ7</RequestId><HostId>74YPc5JM21WP444bAdAArzryyHlBwsFr1lnBPeQSRXE+NXOoNvS6ltyV1yiAySShw1cYcOZ7+7M=</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-acdaa56c",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260320T102814Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjBUMTE6Mjg6MTRaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1hbGdvcml0aG0iLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHgtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24tY3VzdG9tZXIta2V5IiwgIiJdLCBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1zZXJ2ZXItc2lkZS1lbmNyeXB0aW9uLWN1c3RvbWVyLWtleS1NRDUiLCAiIl0sIHsiYnVja2V0IjogImFub24tcmV2ZXJzZS1zMy10ZXN0LWJ1Y2tldCJ9LCB7ImtleSI6ICJ0ZXN0LXBvc3Qtc3NlYy1hY2RhYTU2YyJ9LCB7IngtYW16LWFsZ29yaXRobSI6ICJBV1M0LUhNQUMtU0hBMjU2In0sIHsieC1hbXotY3JlZGVudGlhbCI6ICJBS0lBUlhCVDNJNUVSRURNM0JNRS8yMDI2MDMyMC91cy1lYXN0LTEvczMvYXdzNF9yZXF1ZXN0In0sIHsieC1hbXotZGF0ZSI6ICIyMDI2MDMyMFQxMDI4MTRaIn1dfQ==",
+        "x-amz-signature": "97ea411002c4b66ec0e6c83efacf1ab13276d8349837e66a31a8ca675581d674",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "not-valid-base64!!!"
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]

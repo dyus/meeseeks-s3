@@ -62,6 +62,7 @@ env/
 # Project specific
 check_before_delete/
 reports/
+tmp/
 *.log
 
 # Environment variables

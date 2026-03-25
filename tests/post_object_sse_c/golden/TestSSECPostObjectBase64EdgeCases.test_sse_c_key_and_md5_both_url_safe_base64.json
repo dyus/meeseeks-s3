@@ -1,0 +1,41 @@
+[
+  {
+    "response": {
+      "status_code": 204,
+      "headers": {
+        "x-amz-version-id": "bM8FPCKg6u.lw5CI3ggsePKD2x4QH9hS",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "NXYsRVc0xRSuCVOCaR121g==",
+        "ETag": "\"4da0c6e0e09b94b9b8453e105c85cb91\"",
+        "x-amz-checksum-crc64nvme": "QsVTfgw3Mks=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Location": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/test-post-ssec-cbdcd14a"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-cbdcd14a",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260320T102717Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjBUMTE6Mjc6MTdaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1hbGdvcml0aG0iLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHgtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24tY3VzdG9tZXIta2V5IiwgIiJdLCBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1zZXJ2ZXItc2lkZS1lbmNyeXB0aW9uLWN1c3RvbWVyLWtleS1NRDUiLCAiIl0sIHsiYnVja2V0IjogImFub24tcmV2ZXJzZS1zMy10ZXN0LWJ1Y2tldCJ9LCB7ImtleSI6ICJ0ZXN0LXBvc3Qtc3NlYy1jYmRjZDE0YSJ9LCB7IngtYW16LWFsZ29yaXRobSI6ICJBV1M0LUhNQUMtU0hBMjU2In0sIHsieC1hbXotY3JlZGVudGlhbCI6ICJBS0lBUlhCVDNJNUVSRURNM0JNRS8yMDI2MDMyMC91cy1lYXN0LTEvczMvYXdzNF9yZXF1ZXN0In0sIHsieC1hbXotZGF0ZSI6ICIyMDI2MDMyMFQxMDI3MTdaIn1dfQ==",
+        "x-amz-signature": "fff3a843d7b1b238f616f8471c8dde44e8cac4401f94b857a0663be227ba87f8",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "wfePuCuj7xu1cNBAdMfyDZNhp6QJPCXGUykJGgJMlbk=",
+        "x-amz-server-side-encryption-customer-key-MD5": "NXYsRVc0xRSuCVOCaR121g=="
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]
