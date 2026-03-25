@@ -1,0 +1,37 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>The secret key was improperly encoded. The secret key must be Base64 encoded.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><ArgumentValue>챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗챕챔챗</ArgumentValue><RequestId>805QD9JN51T0K6KC</RequestId><HostId>mqmTFzrvgFhFZdfz06Y2njhBH2sx9zPDy+nG0PNY7QcyKoT3EjtNcqIYVduU7a4sZFyIfcUUj34FFkhsCxLzgAOqYbaOPaZ8</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-8cc69d4c",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260320T102728Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjBUMTE6Mjc6MjhaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1hbGdvcml0aG0iLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHgtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24tY3VzdG9tZXIta2V5IiwgIiJdLCBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1zZXJ2ZXItc2lkZS1lbmNyeXB0aW9uLWN1c3RvbWVyLWtleS1NRDUiLCAiIl0sIHsiYnVja2V0IjogImFub24tcmV2ZXJzZS1zMy10ZXN0LWJ1Y2tldCJ9LCB7ImtleSI6ICJ0ZXN0LXBvc3Qtc3NlYy04Y2M2OWQ0YyJ9LCB7IngtYW16LWFsZ29yaXRobSI6ICJBV1M0LUhNQUMtU0hBMjU2In0sIHsieC1hbXotY3JlZGVudGlhbCI6ICJBS0lBUlhCVDNJNUVSRURNM0JNRS8yMDI2MDMyMC91cy1lYXN0LTEvczMvYXdzNF9yZXF1ZXN0In0sIHsieC1hbXotZGF0ZSI6ICIyMDI2MDMyMFQxMDI3MjhaIn1dfQ==",
+        "x-amz-signature": "f6a7bb1b87c6b0cbcad4b0c94003bc7bd9f2a32ce603a034c82f5619c7cf3444",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "éèêéèêéèêéèêéèêéèêéèêéèêéèêéèêéèêéèêéèêéèêéèê",
+        "x-amz-server-side-encryption-customer-key-MD5": "kGTUEEj0TjwHH2aPFQGnpg=="
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide an appropriate secret key.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>Y4BM6S3H395D277D</RequestId><HostId>juOtH2x8d1ULB5WHUoiVH9xMQ6VV1Hwm4avS3BIm0KEL0S+ooJNQDhMhlysHElUh+NdoiKBP/Lc=</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-9deb4cf1",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260320T102749Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjBUMTE6Mjc6NDlaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1hbGdvcml0aG0iLCAiIl0sIHsiYnVja2V0IjogImFub24tcmV2ZXJzZS1zMy10ZXN0LWJ1Y2tldCJ9LCB7ImtleSI6ICJ0ZXN0LXBvc3Qtc3NlYy05ZGViNGNmMSJ9LCB7IngtYW16LWFsZ29yaXRobSI6ICJBV1M0LUhNQUMtU0hBMjU2In0sIHsieC1hbXotY3JlZGVudGlhbCI6ICJBS0lBUlhCVDNJNUVSRURNM0JNRS8yMDI2MDMyMC91cy1lYXN0LTEvczMvYXdzNF9yZXF1ZXN0In0sIHsieC1hbXotZGF0ZSI6ICIyMDI2MDMyMFQxMDI3NDlaIn1dfQ==",
+        "x-amz-signature": "d11f9c76fda66aa66cb6886bb41751ec0e4701e4891a8658d08b1e5a33cd1103",
+        "x-amz-server-side-encryption-customer-algorithm": ""
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]

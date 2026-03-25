@@ -1,0 +1,36 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Requests specifying Server Side Encryption with Customer provided keys must provide a valid encryption algorithm.</Message><ArgumentName>x-amz-server-side-encryption</ArgumentName><RequestId>3P97BQJNR5XSAF7D</RequestId><HostId>hPqW60C0mc4ZLGgGr03nF4cgcHUq9o3pkO2gffI1hufPy2BpFvfj/eDLwfr7otd6cb1lKSQX3IZQVObQqzbtrGCeghqfJUIR</HostId></Error>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-69a75211",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260320T102804Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjBUMTE6Mjg6MDRaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1rZXkiLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHgtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24tY3VzdG9tZXIta2V5LU1ENSIsICIiXSwgeyJidWNrZXQiOiAiYW5vbi1yZXZlcnNlLXMzLXRlc3QtYnVja2V0In0sIHsia2V5IjogInRlc3QtcG9zdC1zc2VjLTY5YTc1MjExIn0sIHsieC1hbXotYWxnb3JpdGhtIjogIkFXUzQtSE1BQy1TSEEyNTYifSwgeyJ4LWFtei1jcmVkZW50aWFsIjogIkFLSUFSWEJUM0k1RVJFRE0zQk1FLzIwMjYwMzIwL3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSwgeyJ4LWFtei1kYXRlIjogIjIwMjYwMzIwVDEwMjgwNFoifV19",
+        "x-amz-signature": "c859976da58c644acee84aa7adf7d23b754e3b124ddd9f5672a4ab5765e8fbdc",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ=="
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "response": {
+      "status_code": 201,
+      "headers": {
+        "x-amz-version-id": "5Z2LcluxcO8ndFwdM_CiTLcFXlwoiIJE",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "ETag": "\"20ca90c305fc28828c3290e6038e4326\"",
+        "x-amz-checksum-crc64nvme": "QsVTfgw3Mks=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Location": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/test-post-ssec-92808b6a",
+        "Content-Type": "application/xml",
+        "Content-Length": "290"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<PostResponse><Location>https://anon-reverse-s3-test-bucket.s3.amazonaws.com/test-post-ssec-92808b6a</Location><Bucket>anon-reverse-s3-test-bucket</Bucket><Key>test-post-ssec-92808b6a</Key><ETag>\"20ca90c305fc28828c3290e6038e4326\"</ETag></PostResponse>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "https://anon-reverse-s3-test-bucket.s3.amazonaws.com/",
+      "query_params": "",
+      "headers": {},
+      "body": "",
+      "form_fields": {
+        "key": "test-post-ssec-92808b6a",
+        "x-amz-algorithm": "AWS4-HMAC-SHA256",
+        "x-amz-credential": "[REDACTED]",
+        "x-amz-date": "20260324T080215Z",
+        "policy": "eyJleHBpcmF0aW9uIjogIjIwMjYtMDMtMjRUMDk6MDI6MTVaIiwgImNvbmRpdGlvbnMiOiBbWyJzdGFydHMtd2l0aCIsICIkeC1hbXotc2VydmVyLXNpZGUtZW5jcnlwdGlvbi1jdXN0b21lci1hbGdvcml0aG0iLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHgtYW16LXNlcnZlci1zaWRlLWVuY3J5cHRpb24tY3VzdG9tZXIta2V5IiwgIiJdLCBbInN0YXJ0cy13aXRoIiwgIiR4LWFtei1zZXJ2ZXItc2lkZS1lbmNyeXB0aW9uLWN1c3RvbWVyLWtleS1NRDUiLCAiIl0sIFsic3RhcnRzLXdpdGgiLCAiJHN1Y2Nlc3NfYWN0aW9uX3N0YXR1cyIsICIiXSwgeyJidWNrZXQiOiAiYW5vbi1yZXZlcnNlLXMzLXRlc3QtYnVja2V0In0sIHsia2V5IjogInRlc3QtcG9zdC1zc2VjLTkyODA4YjZhIn0sIHsieC1hbXotYWxnb3JpdGhtIjogIkFXUzQtSE1BQy1TSEEyNTYifSwgeyJ4LWFtei1jcmVkZW50aWFsIjogIkFLSUFSWEJUM0k1RVJFRE0zQk1FLzIwMjYwMzI0L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSwgeyJ4LWFtei1kYXRlIjogIjIwMjYwMzI0VDA4MDIxNVoifV19",
+        "x-amz-signature": "8e3c30823e36fff7faa6b8c7a75b170de962ffaac430fa7c89c28f2b7b535585",
+        "x-amz-server-side-encryption-customer-algorithm": "AES256",
+        "x-amz-server-side-encryption-customer-key": "K0+/yQHJcx5CgotqScZJqhfJ8hpfw4leiB3Bzyo8HSo=",
+        "x-amz-server-side-encryption-customer-key-MD5": "I0aPuXuw4REDJuP1fw07QQ==",
+        "success_action_status": "201"
+      },
+      "file_info": {
+        "file": {
+          "filename": "test_file.txt",
+          "size": 33
+        }
+      }
+    }
+  }
+]
