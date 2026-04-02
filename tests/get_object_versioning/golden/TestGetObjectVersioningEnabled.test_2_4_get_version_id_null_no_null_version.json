@@ -1,0 +1,84 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134413Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "UAc0g.f8e1jfgRZgx5RLAN47F1W8YIVT",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"c9987075e741e0f495fbba8b2159d92b\"",
+        "x-amz-checksum-crc64nvme": "6aokfD5dRDs=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t2-4-e3f59adc",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "9",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134414Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "versioned"
+    }
+  },
+  {
+    "response": {
+      "status_code": 404,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>NoSuchVersion</Code><Message>The specified version does not exist.</Message><Key>t2-4-e3f59adc</Key><VersionId>null</VersionId><RequestId>C67RSAYXJSHG9EK2</RequestId><HostId>SCYuN2B96HK/mVrA7fJE0cBqwiufl027AZ/36qQhttyHsjEjzchHpy74kQpQpilTUhWT1gxISZRiKyK+XVAQOe/iD/+Y93sW</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/t2-4-e3f59adc",
+      "query_params": "?versionId=null",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134415Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

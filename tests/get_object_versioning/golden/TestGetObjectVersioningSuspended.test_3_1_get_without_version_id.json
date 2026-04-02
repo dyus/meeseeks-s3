@@ -1,0 +1,144 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134448Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "w5ilp1kvP3S6kMvI2SAoM4V09VNDgDzN",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"c9987075e741e0f495fbba8b2159d92b\"",
+        "x-amz-checksum-crc64nvme": "6aokfD5dRDs=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t3-1-032dbf17",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "9",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134501Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "versioned"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "156",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134502Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Suspended</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"c4a67bf2e43decab510dbfc83e3906d1\"",
+        "x-amz-checksum-crc64nvme": "KV2EEzoYON4=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t3-1-032dbf17",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "15",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134503Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "suspended-write"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Last-Modified": "Mon, 30 Mar 2026 13:45:05 GMT",
+        "ETag": "\"c4a67bf2e43decab510dbfc83e3906d1\"",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-version-id": "null",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "binary/octet-stream",
+        "Content-Length": "15"
+      },
+      "body": "suspended-write"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/t3-1-032dbf17",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134504Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

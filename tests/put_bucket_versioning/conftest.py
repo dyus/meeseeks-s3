@@ -12,6 +12,28 @@ def build_versioning_xml(status: str, xmlns: bool = True) -> bytes:
     ).encode("utf-8")
 
 
+def build_versioning_xml_with_mfa(
+    status: str, mfa_delete: str = None, xmlns: bool = True
+) -> bytes:
+    """Build PutBucketVersioning XML body with optional MfaDelete element.
+
+    Args:
+        status: Status value (Enabled, Suspended, etc.)
+        mfa_delete: MfaDelete value. None = omit element, "" = empty element.
+        xmlns: Whether to include xmlns attribute.
+    """
+    ns = ' xmlns="http://s3.amazonaws.com/doc/2006-03-01/"' if xmlns else ""
+    mfa = ""
+    if mfa_delete is not None:
+        mfa = f"<MfaDelete>{mfa_delete}</MfaDelete>"
+    return (
+        f'<VersioningConfiguration{ns}>'
+        f"<Status>{status}</Status>"
+        f"{mfa}"
+        "</VersioningConfiguration>"
+    ).encode("utf-8")
+
+
 def build_versioning_xml_padded(
     status: str = "Enabled", target_bytes: int = 1_100_000
 ) -> bytes:

@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ListVersionsResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>anon-reverse-s3-test-bucket</Name><Prefix>lov-test-06135a45/</Prefix><KeyMarker>lov-test-06135a45/obj-alive</KeyMarker><VersionIdMarker>null</VersionIdMarker><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><DeleteMarker><Key>lov-test-06135a45/obj-deleted</Key><VersionId>dGvRNfD.f4AtFg8rNiQ3TJ15ttNuuCeA</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-26T14:11:27.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><Version><Key>lov-test-06135a45/obj-deleted</Key><VersionId>XcjnIhya7ffidABqNTaDHWUWv6lQYLwT</VersionId><IsLatest>false</IsLatest><LastModified>2026-03-26T14:11:27.000Z</LastModified><ETag>&quot;6654c734ccab8f440ff0825eb443dc7f&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><Version><Key>lov-test-06135a45/obj-revived</Key><VersionId>Z9BpxR7keYS2mNseZnS2o0vLbOjeqzBe</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-26T14:11:28.000Z</LastModified><ETag>&quot;29b3eca3be7e4788a6e777518e6957ce&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>10</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><DeleteMarker><Key>lov-test-06135a45/obj-revived</Key><VersionId>vGcgpkDxcJf1CVkt2R.H0DvIwlO.XK3v</VersionId><IsLatest>false</IsLatest><LastModified>2026-03-26T14:11:28.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><Version><Key>lov-test-06135a45/obj-revived</Key><VersionId>_pbVOCLeNBEcwr7ynRxVoDDj2LeO64hM</VersionId><IsLatest>false</IsLatest><LastModified>2026-03-26T14:11:27.000Z</LastModified><ETag>&quot;6654c734ccab8f440ff0825eb443dc7f&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version></ListVersionsResult>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&key-marker=lov-test-06135a45%2Fobj-alive&prefix=lov-test-06135a45%2F&version-id-marker=null",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260326T141128Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

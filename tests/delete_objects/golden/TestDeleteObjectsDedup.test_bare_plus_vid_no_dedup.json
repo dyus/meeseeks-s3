@@ -1,0 +1,117 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033235Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "ItNhI4pNFAuPu4cUjZl2WvSixWWc6Ort",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"6654c734ccab8f440ff0825eb443dc7f\"",
+        "x-amz-checksum-crc64nvme": "6RYxVX5H2lY=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/dedup-bare-vid-200e4b18",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033236Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v1"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "Y4fy1UOmPua1tDZEPldJAi3yDiJuOZ9Z",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"1b267619c4812cc46ee281747884ca50\"",
+        "x-amz-checksum-crc64nvme": "aKUgDS4ZQd0=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/dedup-bare-vid-200e4b18",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033237Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v2"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Connection": "close",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Deleted><Key>dedup-bare-vid-200e4b18</Key><DeleteMarker>true</DeleteMarker><DeleteMarkerVersionId>Q0tJCmVzi6Dptvg0oNvKJ4QpYnfB7puo</DeleteMarkerVersionId></Deleted><Deleted><Key>dedup-bare-vid-200e4b18</Key><VersionId>ItNhI4pNFAuPu4cUjZl2WvSixWWc6Ort</VersionId></Deleted></DeleteResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?delete",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "aaIBcdXNb9p+7gP7Jw1FLw==",
+        "Content-Length": "260",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033237Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>dedup-bare-vid-200e4b18</Key></Object><Object><Key>dedup-bare-vid-200e4b18</Key><VersionId>ItNhI4pNFAuPu4cUjZl2WvSixWWc6Ort</VersionId></Object></Delete>"
+    }
+  }
+]

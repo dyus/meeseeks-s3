@@ -1,0 +1,30 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>MalformedXML</Code><Message>The XML you provided was not well-formed or did not validate against our published schema</Message><RequestId>PKN3P2736VN60FYM</RequestId><HostId>ScC/2V8htKZT3iM2Lowz5qXTgxTooBkd3x4iFja1hbdqgt0V1lGx3UHzaGiuABGr+/pXYloBjs0=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "162",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260320T042817Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>wrongxml"
+    }
+  }
+]

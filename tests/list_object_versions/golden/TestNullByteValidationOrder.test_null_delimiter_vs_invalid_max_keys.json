@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Provided max-keys not an integer or within integer range</Message><ArgumentName>max-keys</ArgumentName><ArgumentValue>abc</ArgumentValue><RequestId>6CQ8D75Z44RSTCY5</RequestId><HostId>mHEcLlHb44SkjOCmUTPmKbC7YA5DZi8z0ESiiu9+es7VgLNCTzpHq6krzKoAMQnAlnYodCmstGE=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&delimiter=%00&max-keys=abc",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T073137Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

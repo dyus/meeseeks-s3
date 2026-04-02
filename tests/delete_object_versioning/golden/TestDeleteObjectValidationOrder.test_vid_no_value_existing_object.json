@@ -1,0 +1,85 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062834Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "DWqHLHonqobRvFj0eMDEnbVJ7wo9VTTf",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"8d777f385d3dfec8815d20f7496026dc\"",
+        "x-amz-checksum-crc64nvme": "7a5hQ478J4A=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/val-6-7de449bf",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "4",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062836Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "data"
+    }
+  },
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Version id cannot be the empty string</Message><ArgumentName>versionId</ArgumentName><ArgumentValue></ArgumentValue><RequestId>PWMHTPY26BG3R6PY</RequestId><HostId>G7kgXhk0Ihv283ldQnXYYb7BJGwMJvAn4Koacykqiq7W/uF8y0SsuVLvTgjYLadUFDr5DGaTc7U=</HostId></Error>"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/anon-reverse-s3-test-bucket/val-6-7de449bf",
+      "query_params": "?versionId",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062837Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

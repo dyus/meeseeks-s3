@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Invalid version id specified</Message><ArgumentName>version-id-marker</ArgumentName><ArgumentValue>ä¸­</ArgumentValue><RequestId>DDBG5NM6ZYHAATWF</RequestId><HostId>0SVq3hqYRRwozN7yfBM+Ghsljoex0uVefwJ4fCSMwvrsfu3oUzmJyx0M5jfIkfTV16i/7tNy/5W6luHCZuSJQGGUkM/Vag74</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&encoding-type=invalid&key-marker=k&version-id-marker=%E4%B8%AD",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T042817Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

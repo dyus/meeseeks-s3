@@ -25,10 +25,10 @@ class S3ClientFactory:
         self.endpoints: dict[str, EndpointConfig] = {
             "aws": EndpointConfig(
                 name="aws",
-                url=None,
+                url=self._normalize_endpoint(os.getenv("AWS_S3_ENDPOINT")),
                 region=os.getenv("AWS_REGION", "us-east-1"),
                 profile=os.getenv("AWS_PROFILE", "aws"),
-                verify_ssl=True,
+                verify_ssl=os.getenv("AWS_S3_VERIFY_SSL", "true").lower() == "true",
             ),
             "custom": EndpointConfig(
                 name="custom",

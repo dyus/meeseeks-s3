@@ -1,0 +1,88 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "156",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134338Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Suspended</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"1446cb0f43b42cf6280efed5e46fcdc7\"",
+        "x-amz-checksum-crc64nvme": "sPjl6fm81+I=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t1-2-491c1090",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "10",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134339Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "hello-null"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Last-Modified": "Mon, 30 Mar 2026 13:43:40 GMT",
+        "ETag": "\"1446cb0f43b42cf6280efed5e46fcdc7\"",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-version-id": "null",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "binary/octet-stream",
+        "Content-Length": "10"
+      },
+      "body": "hello-null"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/t1-2-491c1090",
+      "query_params": "?versionId=null",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134340Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

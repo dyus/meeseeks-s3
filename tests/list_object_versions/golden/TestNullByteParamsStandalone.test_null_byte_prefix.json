@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Value must be a sequence of Unicode characters and cannot include Null.</Message><ArgumentName>prefix</ArgumentName><ArgumentValue>&#0;</ArgumentValue><RequestId>0P8ZJQ4XDRHAHNCJ</RequestId><HostId>z92BCOFThvkpbeZrQbrOVw7bjA5sfBOrumLQPPW5HfCM/AQ874SyUux0mt88bFZb4d86LEvzATC9pyknMvehBSaQ5tf7014x</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&max-keys=1&prefix=%00",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T073130Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

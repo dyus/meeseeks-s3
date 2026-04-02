@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>Invalid Encoding Method specified in Request</Message><ArgumentName>encoding-type</ArgumentName><ArgumentValue>invalid</ArgumentValue><RequestId>63RVQQFNQ938WQXS</RequestId><HostId>ql7v3Qhos44N7rDciL56g2mwGR8vQaEcmr5hcwSfBvvIF7RyguxlNmdddk1ZFiwn5Yz0sz814Rk=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&encoding-type=invalid&key-marker=%E4%B8%AD",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T042819Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>max-keys cannot be negative</Message><ArgumentName>max-keys</ArgumentName><RequestId>EFAQW7MFMK03RBQP</RequestId><HostId>DhCaB5/ewPlFJPFZm/H8S/omUowAtyquOSC/rTdNSEaDRcsaKaAyJHgkj7YPf/C3PtRUwdmc77leFCyfuEWY9lUdNzfIbXMXa0B6Zl0zg0k=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&max-keys=-1",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T042716Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

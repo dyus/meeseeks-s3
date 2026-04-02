@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 404,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>nonexistent-bucket-aa238c07</BucketName><RequestId>N4V9Q12XT5D4B39G</RequestId><HostId>7Qt7mG78f0E8q7yM3atZiua0JsINSQWb+XVP/0duhsE+49xQPpfM2ELNA/vWsi2CfRi/8hePJROa8VAlr8JIxCRHNfzhyBPO</HostId></Error>"
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/nonexistent-bucket-aa238c07/somekey",
+      "query_params": "?versionId=INVALID_FORMAT_12345",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062828Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

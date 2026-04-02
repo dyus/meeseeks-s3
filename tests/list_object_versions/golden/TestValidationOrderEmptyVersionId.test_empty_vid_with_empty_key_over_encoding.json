@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>A version-id marker cannot be empty.</Message><ArgumentName>version-id-marker</ArgumentName><ArgumentValue></ArgumentValue><RequestId>9ZQRK5M68B76A846</RequestId><HostId>qs5UvjWNny0X0M2vGL5LnDIBiQxB54J4L79+lUQ1JR+WsL3ebrq9JTQerqO9XCSY8+Skt3MO+YYRPB78Yy8r5i8QqC+Nogeo</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&encoding-type=invalid&key-marker=&version-id-marker=",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T042846Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

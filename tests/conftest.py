@@ -51,10 +51,14 @@ def ensure_bucket_exists(s3_client, bucket_name, region="us-east-1"):
 @pytest.fixture(scope="session", autouse=True)
 def ensure_test_bucket_exists(aws_client, test_bucket, aws_region, request):
     """Auto-ensure test bucket exists for all tests."""
-    ensure_bucket_exists(aws_client, test_bucket, aws_region)
-
-    # Also ensure bucket exists on custom endpoint when running in comparison mode
     endpoint_mode = request.config.getoption("--endpoint")
+
+    # Skip AWS bucket check when running in custom-only mode
+    # (aws_client may not have valid credentials for real AWS)
+    if endpoint_mode != "custom":
+        ensure_bucket_exists(aws_client, test_bucket, aws_region)
+
+    # Also ensure bucket exists on custom endpoint when running in comparison/custom mode
     if endpoint_mode in ("custom", "both"):
         custom_endpoint = os.getenv("S3_ENDPOINT")
         if custom_endpoint:
@@ -420,8 +424,11 @@ def custom_endpoint_url(request):
 
 
 @pytest.fixture(scope="session")
-def aws_credentials():
+def aws_credentials(request):
     """AWS credentials for comparison."""
+    endpoint_mode = request.config.getoption("--endpoint")
+    if endpoint_mode == "custom":
+        return None  # Not needed in custom-only mode
     import boto3
 
     session = boto3.Session(profile_name=os.getenv("AWS_PROFILE", "aws"))

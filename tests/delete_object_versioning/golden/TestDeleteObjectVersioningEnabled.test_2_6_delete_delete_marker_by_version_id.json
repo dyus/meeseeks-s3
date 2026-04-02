@@ -1,0 +1,169 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062747Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "qTBrsZ.7bHByxBTacthINzS1FUM104fC",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"919c8b643b7133116b02fc0d9bb7df3f\"",
+        "x-amz-checksum-crc64nvme": "qH8Ak/zuapA=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/del-en-6-f91e37b2",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "8",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062748Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "original"
+    }
+  },
+  {
+    "response": {
+      "status_code": 204,
+      "headers": {
+        "x-amz-version-id": "M0TyO6OwOZ487ApvDsZJx_l4K0LiGLDP",
+        "x-amz-delete-marker": "true"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/anon-reverse-s3-test-bucket/del-en-6-f91e37b2",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062748Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  },
+  {
+    "response": {
+      "status_code": 404,
+      "headers": {
+        "x-amz-delete-marker": "true",
+        "x-amz-version-id": "M0TyO6OwOZ487ApvDsZJx_l4K0LiGLDP",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>del-en-6-f91e37b2</Key><RequestId>5SWMMYDJ64X3QN2F</RequestId><HostId>lYH0C2Wb7cecuvdAeLgdLTDRdyvLLe3rIIX085Oakb3spMsAvm90kq+/1HsQ1jzv9PiYclDmpHI=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/del-en-6-f91e37b2",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062749Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  },
+  {
+    "response": {
+      "status_code": 204,
+      "headers": {
+        "x-amz-version-id": "M0TyO6OwOZ487ApvDsZJx_l4K0LiGLDP",
+        "x-amz-delete-marker": "true"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/anon-reverse-s3-test-bucket/del-en-6-f91e37b2",
+      "query_params": "?versionId=M0TyO6OwOZ487ApvDsZJx_l4K0LiGLDP",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062750Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Last-Modified": "Wed, 01 Apr 2026 06:27:49 GMT",
+        "ETag": "\"919c8b643b7133116b02fc0d9bb7df3f\"",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-version-id": "qTBrsZ.7bHByxBTacthINzS1FUM104fC",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "binary/octet-stream",
+        "Content-Length": "8"
+      },
+      "body": "original"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/del-en-6-f91e37b2",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T062751Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

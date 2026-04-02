@@ -1,0 +1,119 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134409Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "twVhZkCDgEKxhobgQGUIeS_kb57U7ro2",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"966634ebf2fc135707d6753692bf4b1e\"",
+        "x-amz-checksum-crc64nvme": "ZtNm4IRlJ40=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t2-3-c9ccafc1",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "8",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134409Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "version1"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "HEy8cqBt9UPmRePVy72f9f9S43wx620E",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"2e0e95285f08a07dea17e7ee111b21c8\"",
+        "x-amz-checksum-crc64nvme": "52B3uNQ7vAY=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t2-3-c9ccafc1",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "8",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134410Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "version2"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Last-Modified": "Mon, 30 Mar 2026 13:44:12 GMT",
+        "ETag": "\"2e0e95285f08a07dea17e7ee111b21c8\"",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-version-id": "HEy8cqBt9UPmRePVy72f9f9S43wx620E",
+        "Accept-Ranges": "bytes",
+        "Content-Type": "binary/octet-stream",
+        "Content-Length": "8"
+      },
+      "body": "version2"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/t2-3-c9ccafc1",
+      "query_params": "?versionId=HEy8cqBt9UPmRePVy72f9f9S43wx620E",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134411Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

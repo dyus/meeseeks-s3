@@ -1,0 +1,115 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033302Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "LmlsVBz74kc04iDswY1kFdBuXN1wRdSx",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"6654c734ccab8f440ff0825eb443dc7f\"",
+        "x-amz-checksum-crc64nvme": "6RYxVX5H2lY=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/delobj-d3-d71ae53c",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033303Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v1"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "0h8_8pf6IzW5CAw.G8UOsp_GGCR_v2gt",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"1b267619c4812cc46ee281747884ca50\"",
+        "x-amz-checksum-crc64nvme": "aKUgDS4ZQd0=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/delobj-d3-d71ae53c",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033304Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v2"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Deleted><Key>delobj-d3-d71ae53c</Key><VersionId>0h8_8pf6IzW5CAw.G8UOsp_GGCR_v2gt</VersionId></Deleted><Deleted><Key>delobj-d3-d71ae53c</Key><DeleteMarker>true</DeleteMarker><DeleteMarkerVersionId>ZtQu1lR3cQq0N0NhS6g3vQPBS7QasV74</DeleteMarkerVersionId></Deleted></DeleteResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?delete",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "iM5u1fe5yMJB4eOAGDn8vQ==",
+        "Content-Length": "250",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033305Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>delobj-d3-d71ae53c</Key><VersionId>0h8_8pf6IzW5CAw.G8UOsp_GGCR_v2gt</VersionId></Object><Object><Key>delobj-d3-d71ae53c</Key></Object></Delete>"
+    }
+  }
+]

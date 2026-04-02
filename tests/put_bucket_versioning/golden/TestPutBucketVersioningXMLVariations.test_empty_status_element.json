@@ -1,0 +1,30 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>IllegalVersioningConfigurationException</Code><Message>The Versioning element must be specified</Message><RequestId>914E5KYEZ8KGQH4C</RequestId><HostId>bpSCtS19CcvPmf3iUIUkxXJjn2QHYCEGGAAOd0zjiw0T7h2w9ZcnXya1alZ3yevtRSrjkck3Pgk=</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260320T042958Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status></Status></VersioningConfiguration>"
+    }
+  }
+]

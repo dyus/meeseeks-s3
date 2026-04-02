@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ListVersionsResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>anon-reverse-s3-test-bucket</Name><Prefix></Prefix><KeyMarker>some-key</KeyMarker><VersionIdMarker>null</VersionIdMarker><NextKeyMarker>ssec-test-0</NextKeyMarker><NextVersionIdMarker>J_OZAfQyIV9A8LxVtTgWURQa8T2ABEUb</NextVersionIdMarker><MaxKeys>1</MaxKeys><IsTruncated>true</IsTruncated><Version><Key>ssec-test-0</Key><VersionId>J_OZAfQyIV9A8LxVtTgWURQa8T2ABEUb</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-30T10:20:32.000Z</LastModified><ETag>&quot;9bc57734ebfe941ce246af97fcfcb63f&quot;</ETag><ChecksumAlgorithm>CRC64NVME</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>0</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version></ListVersionsResult>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&key-marker=some-key&max-keys=1&version-id-marker=null",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T044931Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

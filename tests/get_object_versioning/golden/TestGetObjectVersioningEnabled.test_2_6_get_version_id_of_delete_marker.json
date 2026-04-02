@@ -1,0 +1,114 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134432Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "msEsJAWyThHOSamklaF1QTa5hWzX5wBk",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"4c5ac2465788ee2ad44c5dc28f6a47b4\"",
+        "x-amz-checksum-crc64nvme": "y0K+HTgkJFA=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/t2-6-d2f5088f",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "13",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134433Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "to-be-deleted"
+    }
+  },
+  {
+    "response": {
+      "status_code": 204,
+      "headers": {
+        "x-amz-version-id": "JEp_9AJli5bvN5oIAQLePLCiMDRy5aCy",
+        "x-amz-delete-marker": "true"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "DELETE",
+      "path": "/anon-reverse-s3-test-bucket/t2-6-d2f5088f",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134434Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  },
+  {
+    "response": {
+      "status_code": 405,
+      "headers": {
+        "x-amz-delete-marker": "true",
+        "Last-Modified": "Mon, 30 Mar 2026 13:44:36 GMT",
+        "x-amz-version-id": "JEp_9AJli5bvN5oIAQLePLCiMDRy5aCy",
+        "Allow": "DELETE",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>MethodNotAllowed</Code><Message>The specified method is not allowed against this resource.</Message><Method>GET</Method><ResourceType>DeleteMarker</ResourceType><RequestId>TA0ETAS5NJ09SNZ7</RequestId><HostId>MdyWQARszNIqo9SzDD1xN8lKihGgrcTDqyK0AEFNPF4WG9RC8RZGBvm11pU1lStDR/75Dc4ppzI=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/t2-6-d2f5088f",
+      "query_params": "?versionId=JEp_9AJli5bvN5oIAQLePLCiMDRy5aCy",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260330T134435Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

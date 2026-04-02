@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ListVersionsResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>anon-reverse-s3-test-bucket</Name><Prefix></Prefix><KeyMarker></KeyMarker><VersionIdMarker></VersionIdMarker><NextKeyMarker>del-dis-3-962e7b3a</NextKeyMarker><NextVersionIdMarker>null</NextVersionIdMarker><MaxKeys>5</MaxKeys><EncodingType>url</EncodingType><IsTruncated>true</IsTruncated><DeleteMarker><Key>del-dis-1-0dbeb137</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-31T07:35:05.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><DeleteMarker><Key>del-dis-1-1378f05f</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-31T07:33:48.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><DeleteMarker><Key>del-dis-2-nonexist-3c0e2dfa</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-31T07:33:51.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><DeleteMarker><Key>del-dis-2-nonexist-ea8e735d</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-31T07:35:07.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><DeleteMarker><Key>del-dis-3-962e7b3a</Key><VersionId>null</VersionId><IsLatest>true</IsLatest><LastModified>2026-03-31T07:35:09.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker></ListVersionsResult>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&encoding-type=url&max-keys=5",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T044937Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

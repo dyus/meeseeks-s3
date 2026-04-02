@@ -1,0 +1,28 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ListVersionsResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>anon-reverse-s3-test-bucket</Name><Prefix>lov-test-77fa1963/</Prefix><KeyMarker></KeyMarker><VersionIdMarker></VersionIdMarker><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Version><Key>lov-test-77fa1963/obj-alive</Key><VersionId>0kvQ6M5hvaoja9rX0DmB8KbDTbm6YI3U</VersionId><IsLatest>true</IsLatest><LastModified>2026-04-01T04:50:11.000Z</LastModified><ETag>&quot;1b267619c4812cc46ee281747884ca50&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><Version><Key>lov-test-77fa1963/obj-alive</Key><VersionId>CmPdowlKDjTEVvpwYol6ALXhDpUpApyK</VersionId><IsLatest>false</IsLatest><LastModified>2026-04-01T04:50:10.000Z</LastModified><ETag>&quot;6654c734ccab8f440ff0825eb443dc7f&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><DeleteMarker><Key>lov-test-77fa1963/obj-deleted</Key><VersionId>sO058OHR.I4D_VftG01ZLoYPfuIytGGD</VersionId><IsLatest>true</IsLatest><LastModified>2026-04-01T04:50:12.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><Version><Key>lov-test-77fa1963/obj-deleted</Key><VersionId>0HUzzXWEB3yJb.8WeCmTxicinK2QTBxY</VersionId><IsLatest>false</IsLatest><LastModified>2026-04-01T04:50:11.000Z</LastModified><ETag>&quot;6654c734ccab8f440ff0825eb443dc7f&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><Version><Key>lov-test-77fa1963/obj-revived</Key><VersionId>GMOJ.Atur_yZqgRK7nDlzzgmCrtIL1oH</VersionId><IsLatest>true</IsLatest><LastModified>2026-04-01T04:50:13.000Z</LastModified><ETag>&quot;29b3eca3be7e4788a6e777518e6957ce&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>10</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version><DeleteMarker><Key>lov-test-77fa1963/obj-revived</Key><VersionId>ebRfqce16yq4e3i7ftY0Bjw4D3qEdKpV</VersionId><IsLatest>false</IsLatest><LastModified>2026-04-01T04:50:13.000Z</LastModified><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner></DeleteMarker><Version><Key>lov-test-77fa1963/obj-revived</Key><VersionId>3rHUT7Va1aTW_82uXGYHKaMqZr_4690T</VersionId><IsLatest>false</IsLatest><LastModified>2026-04-01T04:50:12.000Z</LastModified><ETag>&quot;6654c734ccab8f440ff0825eb443dc7f&quot;</ETag><ChecksumAlgorithm>CRC32</ChecksumAlgorithm><ChecksumType>FULL_OBJECT</ChecksumType><Size>2</Size><Owner><ID>10adec58aa82e4276fcd6bffd437ba0e42ae890098cf4bba7aa0aa8215241bfd</ID></Owner><StorageClass>STANDARD</StorageClass></Version></ListVersionsResult>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&prefix=lov-test-77fa1963%2F",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260401T045017Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>BadDigest</Code><Message>The Content-MD5 you specified did not match what we received.</Message><CalculatedDigest>IjhtHf5gnkMYmEeiwoaHWg==</CalculatedDigest><ExpectedDigest>AWECFBhmZGwRrNUBtwbEEg==</ExpectedDigest><RequestId>A8JBKH7QHW93C5FV</RequestId><HostId>7D9aj9LyD0PWbVUtOkeSnCBlVvH/EY7OPiBMmjc338wE1Dz86wKsMGggIIbzYV83JhHOxX15gaVUhOlQM/EjH5OQx08sZC15</HostId></Error>"
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "AWECFBhmZGwRrNUBtwbEEg==",
+        "Content-Length": "161",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260320T042813Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status></VersioningConfiguration>"
+    }
+  }
+]

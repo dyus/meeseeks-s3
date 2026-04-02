@@ -141,6 +141,43 @@ class TestPutBucketVersioningMalformedBody:
 
     @pytest.mark.edge_case
     @pytest.mark.usefixtures("setup_test_bucket")
+    def test_xml_trailing_characters(self, test_bucket, make_request, json_metadata):
+        """Valid XML with trailing characters 'wrongxml' should return 400 MalformedXML (doc test 20)."""
+        body = (
+            b'<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">'
+            b"<Status>Enabled</Status>"
+            b"<MfaDelete>Disabled</MfaDelete>"
+            b"</VersioningConfiguration>"
+            b"wrongxml"
+        )
+        headers = {"Content-Type": "application/xml"}
+
+        response = make_request(
+            "PUT",
+            f"/{test_bucket}",
+            body=body,
+            headers=headers,
+            query_params="?versioning",
+        )
+
+        if hasattr(response, "comparison"):
+            assert response.aws.status_code == 400, (
+                f"AWS expected 400, got {response.aws.status_code}: {response.aws.text[:200]}"
+            )
+            error_code, error_msg = extract_error_info(response.aws.text)
+            json_metadata["aws_error_code"] = error_code
+            json_metadata["aws_error_message"] = error_msg
+            assert response.comparison.is_compliant, response.diff_summary
+        else:
+            assert response.status_code == 400, (
+                f"Expected 400, got {response.status_code}: {response.text[:200]}"
+            )
+            error_code, error_msg = extract_error_info(response.text)
+            json_metadata["error_code"] = error_code
+            json_metadata["error_message"] = error_msg
+
+    @pytest.mark.edge_case
+    @pytest.mark.usefixtures("setup_test_bucket")
     def test_wrong_root_element(self, test_bucket, make_request, json_metadata):
         """Wrong root element — AWS ignores it and returns 200 (no-op)."""
         body = b'<?xml version="1.0"?><Delete><Status>Enabled</Status></Delete>'

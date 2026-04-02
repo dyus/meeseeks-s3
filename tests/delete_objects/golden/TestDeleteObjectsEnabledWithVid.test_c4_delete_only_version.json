@@ -1,0 +1,113 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033250Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "loTs1wyEfB08DEiRzXTTZ53CxX5fhZB1",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"6299ba2cbd9661a5e3872b715521cd6a\"",
+        "x-amz-checksum-crc64nvme": "rzsmsrcRLcM=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/delobj-c4-d9ad5465",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "4",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033251Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "only"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Connection": "close",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Deleted><Key>delobj-c4-d9ad5465</Key><VersionId>loTs1wyEfB08DEiRzXTTZ53CxX5fhZB1</VersionId></Deleted></DeleteResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?delete",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "a1BSYY3y0OUL9Q7FzK0zSQ==",
+        "Content-Length": "204",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033252Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>delobj-c4-d9ad5465</Key><VersionId>loTs1wyEfB08DEiRzXTTZ53CxX5fhZB1</VersionId></Object></Delete>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 404,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message><Key>delobj-c4-d9ad5465</Key><RequestId>J4XA37ER7PF4K3GP</RequestId><HostId>XtQRaqY4jA5C/ONEf6I2ytlRgniB/YY7MOoOW5vKeZAFcG4Usurecr4iTlOhtvMLzUGrJJQSlvMJuvsVH0OW0aGHPyCxRjf4kS6aXHfM4u4=</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket/delobj-c4-d9ad5465",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033253Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

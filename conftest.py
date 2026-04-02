@@ -112,6 +112,9 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "put_bucket_versioning: PutBucketVersioning handler tests"
     )
+    config.addinivalue_line(
+        "markers", "list_object_versions: ListObjectVersions handler tests"
+    )
 
 
 @pytest.fixture(scope="session")
@@ -121,8 +124,25 @@ def s3_factory():
 
 
 @pytest.fixture(scope="session")
-def aws_client(s3_factory):
+def aws_client(request, s3_factory):
     """Session-scoped AWS S3 client."""
+    endpoint_mode = request.config.getoption("--endpoint")
+    if endpoint_mode == "custom":
+        return None  # Not needed in custom-only mode
+    return s3_factory.create_client("aws")
+
+
+@pytest.fixture(scope="session")
+def setup_client(request, s3_factory):
+    """Session-scoped boto3 client for test setup/teardown (creating objects, enabling versioning, etc.).
+
+    Works in any --endpoint mode:
+    - aws/both: uses the AWS client
+    - custom: uses the custom client
+    """
+    endpoint_mode = request.config.getoption("--endpoint")
+    if endpoint_mode == "custom":
+        return s3_factory.create_client("custom")
     return s3_factory.create_client("aws")
 
 
@@ -259,9 +279,9 @@ def ensure_bucket_exists(s3_client, bucket_name, region="us-east-1"):
 
 
 @pytest.fixture(scope="session")
-def setup_test_bucket(aws_client, test_bucket, aws_region):
+def setup_test_bucket(request, setup_client, test_bucket, aws_region):
     """Ensure test bucket exists before running tests."""
-    ensure_bucket_exists(aws_client, test_bucket, aws_region)
+    ensure_bucket_exists(setup_client, test_bucket, aws_region)
     return test_bucket
 
 

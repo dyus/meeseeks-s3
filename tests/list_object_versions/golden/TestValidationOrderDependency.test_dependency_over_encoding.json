@@ -1,0 +1,29 @@
+[
+  {
+    "response": {
+      "status_code": 400,
+      "headers": {
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked",
+        "Connection": "close"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Error><Code>InvalidArgument</Code><Message>A version-id marker cannot be specified without a key marker.</Message><ArgumentName>version-id-marker</ArgumentName><ArgumentValue>bad-vid</ArgumentValue><RequestId>WQ1AVGAM33Y06GGZ</RequestId><HostId>RXG7oF5ae8uBhhY5eRUqDOSnccgm0moTJuK+XVxl9IwW3YtKZejx3hPkzw3fsWfXkpzU9KWmcqpGVgcEV8x5+x24ChsZTM5h</HostId></Error>"
+    },
+    "request": {
+      "method": "GET",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versions&encoding-type=invalid&version-id-marker=bad-vid",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "0",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260325T042849Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": ""
+    }
+  }
+]

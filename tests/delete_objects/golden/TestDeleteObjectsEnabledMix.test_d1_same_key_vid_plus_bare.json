@@ -1,0 +1,117 @@
+[
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?versioning",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-Length": "154",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033254Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<VersioningConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Status>Enabled</Status><MfaDelete>Disabled</MfaDelete></VersioningConfiguration>"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "q6ifJ3PkgGQuvC18sUXQR3vHNg2PAbof",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"6654c734ccab8f440ff0825eb443dc7f\"",
+        "x-amz-checksum-crc64nvme": "6RYxVX5H2lY=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/delobj-d1-b222eb02",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033256Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v1"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "x-amz-version-id": "XSI.VKU0qs6IfG1yXqR0V_FT12WeYMsh",
+        "x-amz-server-side-encryption": "AES256",
+        "ETag": "\"1b267619c4812cc46ee281747884ca50\"",
+        "x-amz-checksum-crc64nvme": "aKUgDS4ZQd0=",
+        "x-amz-checksum-type": "FULL_OBJECT",
+        "Content-Length": "0"
+      },
+      "body": ""
+    },
+    "request": {
+      "method": "PUT",
+      "path": "/anon-reverse-s3-test-bucket/delobj-d1-b222eb02",
+      "query_params": "",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Length": "2",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033257Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "v2"
+    }
+  },
+  {
+    "response": {
+      "status_code": 200,
+      "headers": {
+        "Connection": "close",
+        "Content-Type": "application/xml",
+        "Transfer-Encoding": "chunked"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Deleted><Key>delobj-d1-b222eb02</Key><DeleteMarker>true</DeleteMarker><DeleteMarkerVersionId>Z9396l6qMgupqI.Bq03ozjYsqGwKJ2wg</DeleteMarkerVersionId></Deleted><Deleted><Key>delobj-d1-b222eb02</Key><VersionId>q6ifJ3PkgGQuvC18sUXQR3vHNg2PAbof</VersionId></Deleted></DeleteResult>"
+    },
+    "request": {
+      "method": "POST",
+      "path": "/anon-reverse-s3-test-bucket",
+      "query_params": "?delete",
+      "headers": {
+        "User-Agent": "python-requests/2.32.3",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept": "*/*",
+        "Connection": "keep-alive",
+        "Content-Type": "application/xml",
+        "Content-MD5": "IYeC6Ubf+9c3wlDqmQS07g==",
+        "Content-Length": "250",
+        "x-amz-content-sha256": "[REDACTED]",
+        "X-Amz-Date": "20260402T033257Z",
+        "Authorization": "[REDACTED]"
+      },
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>delobj-d1-b222eb02</Key><VersionId>q6ifJ3PkgGQuvC18sUXQR3vHNg2PAbof</VersionId></Object><Object><Key>delobj-d1-b222eb02</Key></Object></Delete>"
+    }
+  }
+]
